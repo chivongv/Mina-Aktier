@@ -64,9 +64,19 @@
   padding: 0.5rem 1.5rem;
 }
 
-.btn-addStock {
+.btn_addStock {
   background-color: #d4d4d4;
   color: #fff;
   border-radius: 10px;
   text-decoration: none;
+}
+
+/* table */
+.table-container {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.btn_save, .btn_cancel, .btn_delete {
+  display: none;
 }
