@@ -3,6 +3,8 @@ import { StockConsumer } from "../context";
 
 class StockTable extends Component {
   render() {
+    let totalSum = 0;
+    let totalYield = 0;
     return (
       <div className="table-container">
         <table className="table">
@@ -14,7 +16,7 @@ class StockTable extends Component {
               <th>Senast [kr]</th>
               <th>Avkastning [%]</th>
               <th>Avkastning [kr]</th>
-              <th>Val</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -32,14 +34,17 @@ class StockTable extends Component {
                           (mYield * 100) / (purchasePrice * quantity)
                         ).toFixed(2)
                       : 0;
+                  totalSum += latestPrice*quantity;
+                  totalYield += mYield;
+                  const status = mYield >= 0 ? 'positive' : 'negative';
                   return (
                     <tr key={quantity}>
                       <td>{label}</td>
-                      <td>{quantity}</td>
-                      <td>{purchasePrice}</td>
+                      <td><div className="row_data" col_name="quantity">{quantity}</div></td>
+                      <td><div className="row_data" col_name="purchasePrice">{purchasePrice}</div></td>
                       <td>{latestPrice}</td>
-                      <td>{mYieldPercent}%</td>
-                      <td>{mYield} kr</td>
+                      <td className={status}>{mYieldPercent}%</td>
+                      <td className={status}>{mYield} kr</td>
                       <td>
                         <span className="btn btn_edit">
                           <a href="/" className="btn_link">
@@ -66,6 +71,21 @@ class StockTable extends Component {
               }}
             </StockConsumer>
           </tbody>
+          <tfoot>
+          <StockConsumer>
+          {data => {
+            if(data.mStocks.length>0){
+              const status = totalYield >= 0 ? "positive" : "negative";
+              return (<tr><td>Totalt alla aktier: </td>
+              <td colSpan="2"></td>
+              <td>{totalSum} kr</td>
+              <td></td>
+              <td className={status}>{totalYield} kr</td><td></td></tr>)
+            }
+          }
+          }
+          </StockConsumer>
+          </tfoot>
         </table>
       </div>
     );

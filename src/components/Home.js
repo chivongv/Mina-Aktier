@@ -14,20 +14,20 @@ function Home() {
   ];
 
   return (
-    <div>
+    <div className="container">
+    <AddStock items={items} />
       <div className="content-container">
         <nav className="nav">
           <ul>
             <li>
-              <Link to="/login">Logga in</Link>
+              <Link to="/login" className="btn btn_link">Logga in</Link>
             </li>
             <li>
-              <Link to="/register">Registrera</Link>
+              <Link to="/register" className="btn btn_link">Registrera</Link>
             </li>
           </ul>
         </nav>
         <h1>Mina aktier</h1>
-        <AddStock items={items} />
         <StockTable />
       </div>
     </div>

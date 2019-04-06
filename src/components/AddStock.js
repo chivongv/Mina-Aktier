@@ -68,7 +68,7 @@ class AddStock extends Component {
                 }}
                 className="btn btn_addStock"
               >
-                Add Stock
+                Lägg till aktie
               </button>
             );
           }}

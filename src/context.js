@@ -8,6 +8,7 @@ class StockProvider extends Component {
   };
 
   setInitStocks = () => {
+
     this.setState({
       mStocks: [
         {
