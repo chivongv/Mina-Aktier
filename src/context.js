@@ -8,13 +8,12 @@ class StockProvider extends Component {
   };
 
   setInitStocks = () => {
-
     this.setState({
       mStocks: [
         {
           label: "Investor A",
           quantity: "50",
-          purchasePrice: "350",
+          purchasePrice: "355",
           latestPrice: "415"
         },
         {
@@ -22,6 +21,12 @@ class StockProvider extends Component {
           quantity: "15",
           purchasePrice: "435",
           latestPrice: "0"
+        },
+        {
+          label: "Tesla",
+          quantity: "10",
+          purchasePrice: "435",
+          latestPrice: "345"
         }
       ]
     });

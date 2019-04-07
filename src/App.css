@@ -32,12 +32,32 @@
   }
 }
 
+/* global */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 /* content-container */
 .container {
   display: flex;
   justify-content: space-around;
   height: 100vh;
+  flex: 1;
+}
+
+.left {
+  order: 1;
   padding: 2rem 1rem;
+}
+
+.right {
+  order: 2;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .content-container {
@@ -46,11 +66,22 @@
   align-items: center;
 }
 
+/* form-container */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+}
+
+.form-container input {
+  margin-bottom: 10px;
+}
+
 /* nav */
 .nav {
   position: absolute;
   top: 1rem;
-  right: 3rem;
+  left: 3rem;
 }
 
 .nav ul {
@@ -61,26 +92,32 @@
   list-style: none;
 }
 
-.nav ul a {
-  text-decoration: none;
-}
-
 /* reusable */
 .btn {
-  padding: 0.5rem 1.5rem;
-}
-
-.btn_addStock {
-  background-color: #d4d4d4;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
   color: #fff;
   border-radius: 10px;
-  text-decoration: none;
+  border-style: solid;
+  font-size: 0.875rem;
 }
 
-/* form-container */
-.form-container {
-  display: flex;
-  flex-direction: column;
+.btn-red {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.btn-green {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+.btn-yellow {
+  background-color: #ffc107;
+  border-color: #ffc107;
+}
+.btn-blue {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
 }
 
 /* table */
@@ -92,7 +129,7 @@
 .btn_save,
 .btn_cancel,
 .btn_delete {
-  display: none;
+  display: inline-block;
 }
 
 .table {
@@ -110,16 +147,35 @@
 }
 
 .table tr {
-  border-bottom: 1px solid rgb(222,222,222);
+  border-bottom: 1px solid rgb(222, 222, 222);
 }
 
 .table tfoot {
 }
 
 .positive {
-  color: #009ECF;
+  color: #009ecf;
 }
 
 .negative {
-  color: #FD6B60;
+  color: #fd6b60;
+}
+
+.row_data.focus() {
+  border: 1px solid red;
+}
+
+input {
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1);
+  display: inline-flex;
+  font-size: 1rem;
+  height: 2.25em;
+  justify-content: flex-start;
+  line-height: 1.5;
+  padding-bottom: calc(0.375em - 1px);
+  padding-left: calc(0.625em - 1px);
+  padding-right: calc(0.625em - 1px);
+  padding-top: calc(0.375em - 1px);
 }

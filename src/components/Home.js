@@ -15,20 +15,29 @@ function Home() {
 
   return (
     <div className="container">
-    <AddStock items={items} />
-      <div className="content-container">
-        <nav className="nav">
-          <ul>
-            <li>
-              <Link to="/login" className="btn btn_link">Logga in</Link>
-            </li>
-            <li>
-              <Link to="/register" className="btn btn_link">Registrera</Link>
-            </li>
-          </ul>
-        </nav>
-        <h1>Mina aktier</h1>
-        <StockTable />
+      <div className="right">
+        <AddStock items={items} />
+        <button className="btn btn-blue">Uppdatera tabellen</button>
+      </div>
+      <div className="left">
+        <div className="content-container">
+          <nav className="nav">
+            <ul>
+              <li>
+                <Link to="/login" className="btn btn-blue">
+                  Logga in
+                </Link>
+              </li>
+              <li>
+                <Link to="/register" className="btn btn-green">
+                  Registrera
+                </Link>
+              </li>
+            </ul>
+          </nav>
+          <h1>Mina aktier</h1>
+          <StockTable />
+        </div>
       </div>
     </div>
   );

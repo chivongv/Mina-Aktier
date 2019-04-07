@@ -33,7 +33,6 @@ class AddStock extends Component {
       <div className="form-container">
         <input
           type="text"
-
           name="label"
           value={this.state.label}
           placeholder="Aktienamn"
@@ -66,7 +65,7 @@ class AddStock extends Component {
                   );
                   this.resetForm();
                 }}
-                className="btn btn_addStock"
+                className="btn btn_addStock btn-blue"
               >
                 Lägg till aktie
               </button>
