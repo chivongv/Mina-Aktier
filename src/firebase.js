@@ -9,6 +9,10 @@ const config = {
   storageBucket: process.env.REACT_APP_storageBucket || process.env.storageBucket,
   messagingSenderId: process.env.REACT_APP_messagingSenderId || process.env.messagingSenderId
 };
+console.log(process.env.REACT_APP_authDomain);
+console.log(process.env.authDomain);
+console.log(process.env.NODE_ENV);
+
 firebase.initializeApp(config);
 
 export default firebase;
