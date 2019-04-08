@@ -5,6 +5,7 @@ class AddStock extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      suggestions: [],
       label: "",
       quantity: "",
       purchasePrice: ""
@@ -13,11 +14,29 @@ class AddStock extends Component {
     this.resetForm = this.resetForm.bind(this);
   }
 
+  suggestionSelected = value => {
+    this.setState(() => ({
+      label: value,
+      suggestions: []
+    }));
+  };
+
   handleChange(event) {
     const { name, value } = event.target;
-    this.setState({
-      [name]: value
-    });
+    if (name === "label") {
+      const { items } = this.props;
+      let suggestions = [];
+      const regex = new RegExp(`${value}`, "i");
+      suggestions = items.filter(v => regex.test(v));
+      this.setState({
+        suggestions,
+        label: value
+      });
+    } else {
+      this.setState({
+        [name]: value
+      });
+    }
   }
 
   resetForm() {
@@ -28,16 +47,41 @@ class AddStock extends Component {
     });
   }
 
+  renderSuggestions() {
+    const { suggestions } = this.state;
+    if (suggestions.length === 0) {
+      return null;
+    }
+    // todo: fix a fixt number of suggestions?
+    return (
+      <div>
+        {suggestions.map(item => (
+          <div
+            className="list-item"
+            key={item}
+            onSelect={() => this.suggestionSelected(item)}
+            onClick={() => this.suggestionSelected(item)}
+          >
+            {item}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   render() {
     return (
       <div className="form-container">
-        <input
-          type="text"
-          name="label"
-          value={this.state.label}
-          placeholder="Aktienamn"
-          onChange={this.handleChange}
-        />
+        <div className="AutoCompleteText">
+          <input
+            type="text"
+            name="label"
+            value={this.state.label}
+            placeholder="Aktienamn"
+            onChange={this.handleChange}
+          />
+          {this.renderSuggestions()}
+        </div>
         <input
           type="text"
           value={this.state.quantity}

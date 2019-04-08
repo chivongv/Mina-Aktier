@@ -5,16 +5,31 @@ class StockTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isEditing: true
+      isEditingStock: false
     };
-    this.handleEditing = this.handleEditing.bind(this);
     this.generateTableHeaders = this.generateTableHeaders.bind(this);
     this.generateTableData = this.generateTableData.bind(this);
   }
 
-  handleEditing() {
-    console.log("clicked");
+  genUID() {}
+
+  calcYield(lastPrice, purchasePrice, quantity) {
+    return lastPrice > 0 ? Math.round((lastPrice - purchasePrice) * quantity) : 0;
   }
+
+  calcYieldPercent(mYield, total) {
+    return mYield !== 0 ? parseFloat((mYield * 100) / total).toFixed(2) : 0;
+  }
+
+  setTextStatus(mYield) {
+    return mYield >= 0 ? "positive" : "negative";
+  }
+
+  handleEditing = () => {
+    this.setState({
+      isEditingStock: !this.state.isEditingStock
+    });
+  };
 
   generateTableHeaders() {
     return (
@@ -41,20 +56,19 @@ class StockTable extends Component {
           <StockConsumer>
             {data => {
               return data.mStocks.map(item => {
-                const { label, quantity, purchasePrice, latestPrice } = item;
-                const mYield =
-                  latestPrice > 0
-                    ? (latestPrice - purchasePrice) * quantity
-                    : 0;
-                const mYieldPercent =
-                  mYield !== 0
-                    ? parseFloat(
-                        (mYield * 100) / (purchasePrice * quantity)
-                      ).toFixed(2)
-                    : 0;
-                totalSum += latestPrice * quantity;
+                const { label, quantity, purchasePrice, lastPrice } = item;
+                const mYield = this.calcYield(
+                  lastPrice,
+                  purchasePrice,
+                  quantity
+                );
+                const mYieldPercent = this.calcYieldPercent(
+                  mYield,
+                  purchasePrice * quantity
+                );
+                totalSum += lastPrice * quantity;
                 totalYield += mYield;
-                const status = mYield >= 0 ? "positive" : "negative";
+                const textStatus = this.setTextStatus(mYield);
                 return (
                   <tr key={quantity}>
                     <td>{label}</td>
@@ -68,23 +82,49 @@ class StockTable extends Component {
                         {purchasePrice}
                       </div>
                     </td>
-                    <td>{latestPrice}</td>
-                    <td className={status}>{mYieldPercent}%</td>
-                    <td className={status}>{mYield} kr</td>
+                    <td>{lastPrice}</td>
+                    <td className={textStatus}>{mYieldPercent}%</td>
+                    <td className={textStatus}>{mYield} kr</td>
                     <td>
-                      <span className="btn_edit">
-                        <button
-                          className="btn btn-blue"
-                          onClick={this.handleEditing}
-                        >
-                          Edit
-                        </button>
-                      </span>
-                      <button className="btn btn_save btn-green">Save</button>
-                      <button className="btn btn_cancel btn-yellow">
-                        Cancel
-                      </button>
-                      <button className="btn btn_delete btn-red">Delete</button>
+                      <StockConsumer>
+                        {data => {
+                          if (this.state.isEditingStock) {
+                            return (
+                              <div className="options">
+                                <button
+                                  className="btn btn_save btn-green"
+                                  onClick={() => data.saveEditing()}
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  className="btn btn_cancel btn-yellow"
+                                  onClick={() => this.handleEditing()}
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  className="btn btn_delete btn-red"
+                                  onClick={() => data.deleteFromList()}
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            );
+                          } else {
+                            return (
+                              <span className="btn_edit">
+                                <button
+                                  className="btn btn-blue"
+                                  onClick={this.handleEditing}
+                                >
+                                  Edit
+                                </button>
+                              </span>
+                            );
+                          }
+                        }}
+                      </StockConsumer>
                     </td>
                   </tr>
                 );
@@ -96,14 +136,18 @@ class StockTable extends Component {
           <StockConsumer>
             {data => {
               if (data.mStocks.length > 0) {
-                const status = totalYield >= 0 ? "positive" : "negative";
+                const textStatus = this.setTextStatus(totalYield);
+                const totalYieldPercent = this.calcYieldPercent(
+                  totalYield,
+                  totalSum
+                );
                 return (
                   <tr>
                     <td>Totalt alla aktier: </td>
                     <td colSpan="2" />
                     <td>{totalSum} kr</td>
-                    <td />
-                    <td className={status}>{totalYield} kr</td>
+                    <td className={textStatus}>{totalYieldPercent}%</td>
+                    <td className={textStatus}>{Math.round(totalYield)} kr</td>
                     <td />
                   </tr>
                 );
