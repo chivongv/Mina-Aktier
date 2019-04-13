@@ -25,7 +25,7 @@ class StockProvider extends Component {
     }
   };
 
-  saveDataToLocalStorage = state => {
+  saveStateToLocalStorage = state => {
     try {
       localStorage.setItem("mina-aktier", JSON.stringify(state));
     } catch (e) {
@@ -77,7 +77,7 @@ class StockProvider extends Component {
       await this.setIsUserLoggedIn(true);
       const uStocks = await this.getUserStocksFromDB();
       await this.setStocksToState(uStocks);
-      await this.saveDataToLocalStorage(this.state);
+      await this.saveStateToLocalStorage(this.state);
     } catch (e) {
       console.error("Error on logging user in.", e);
     }
@@ -134,7 +134,7 @@ class StockProvider extends Component {
   setUserStocksFromDBToState = async () => {
     const uStocks = await this.getUserStocksFromDB();
     await this.setStocksToState(uStocks);
-    await this.saveDataToLocalStorage(this.state);
+    await this.saveStateToLocalStorage(this.state);
   };
 
   addToList = async (name, api_id, quantity, purchasePrice) => {
@@ -159,7 +159,7 @@ class StockProvider extends Component {
           .doc(userId)
           .set({ mStocks: this.state.mStocks });
       }
-      await this.saveDataToLocalStorage(this.state);
+      await this.saveStateToLocalStorage(this.state);
     } else {
       console.log("Please fill out all fields.");
     }
@@ -221,7 +221,7 @@ class StockProvider extends Component {
     if (user) {
       this.updateStocksInDB(mStocks);
     }
-    this.saveDataToLocalStorage(this.state);
+    this.saveStateToLocalStorage(this.state);
   };
 
   render() {

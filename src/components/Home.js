@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import firebase from "../firebase.js";
 import AddStock from "./AddStock";
 import StockTable from "./StockTable";
+import ToggleMode from "./ToggleMode";
 
 class Home extends Component {
   componentDidMount() {
@@ -46,6 +47,7 @@ class Home extends Component {
       <div className="container content">
         <div className="right">
           <React.Fragment>
+            <ToggleMode />
             <AddStock addToList={this.props.data.addToList} />
             <button
               className="btn btn-blue"
