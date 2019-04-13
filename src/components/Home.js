@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import { StockConsumer } from "../context";
+import firebase from "../firebase.js";
 import AddStock from "./AddStock";
 import StockTable from "./StockTable";
-import { StockConsumer } from "../context";
 
 class Home extends Component {
   componentDidMount() {}
@@ -33,8 +34,18 @@ class Home extends Component {
               <ul>
                 <StockConsumer>
                   {data => {
-                    const user = data.user;
-                    if (!user) {
+                    if (data.isUserLoggedIn) {
+                      const user = firebase.auth().currentUser;
+                      if (user) {
+                        return (
+                          <li>
+                            <Link to="/logout" className="btn btn-blue">
+                              Logga ut
+                            </Link>
+                          </li>
+                        );
+                      }
+                    } else {
                       return (
                         <React.Fragment>
                           <li>
@@ -49,14 +60,6 @@ class Home extends Component {
                           </li>
                         </React.Fragment>
                       );
-                    } else {
-                      return (
-                        <li>
-                          <Link to="/logout" className="btn btn-blue">
-                            Logga ut
-                          </Link>
-                        </li>
-                      );
                     }
                   }}
                 </StockConsumer>
@@ -65,7 +68,7 @@ class Home extends Component {
             <h1>Mina aktier</h1>
             <StockConsumer>
               {data => {
-                return <StockTable mStocks={data.mStocks} />;
+                return <StockTable mStocks={data.mStocks} deleteFromList={data.deleteFromList} loadDataFromLocalStorage={data.loadDataFromLocalStorage}/>;
               }}
             </StockConsumer>
           </div>

@@ -105,6 +105,7 @@ class AddStock extends PureComponent {
           type="number"
           value={this.state.quantity}
           name="quantity"
+          min="1"
           placeholder="Antal"
           onChange={this.handleChange}
           autoComplete="off"
