@@ -34,17 +34,15 @@ class Home extends Component {
               <ul>
                 <StockConsumer>
                   {data => {
-                    if (data.isUserLoggedIn) {
-                      const user = firebase.auth().currentUser;
-                      if (user) {
-                        return (
-                          <li>
-                            <Link to="/logout" className="btn btn-blue">
-                              Logga ut
-                            </Link>
-                          </li>
-                        );
-                      }
+                    const user = firebase.auth().currentUser;
+                    if (user) {
+                      return (
+                        <li>
+                          <button type="button" onClick={() => data.sendLogout()} className="btn btn-blue">
+                            Logga ut
+                          </button>
+                        </li>
+                      );
                     } else {
                       return (
                         <React.Fragment>
@@ -68,7 +66,13 @@ class Home extends Component {
             <h1>Mina aktier</h1>
             <StockConsumer>
               {data => {
-                return <StockTable mStocks={data.mStocks} deleteFromList={data.deleteFromList} loadDataFromLocalStorage={data.loadDataFromLocalStorage}/>;
+                return (
+                  <StockTable
+                    mStocks={data.mStocks}
+                    deleteFromList={data.deleteFromList}
+                    loadDataFromLocalStorage={data.loadDataFromLocalStorage}
+                  />
+                );
               }}
             </StockConsumer>
           </div>

@@ -5,18 +5,20 @@ const StockContext = React.createContext();
 
 class StockProvider extends Component {
   state = {
-    uisUserLoggedIn: false,
+    isUserLoggedIn: false,
     mStocks: []
   };
 
   loadDataFromLocalStorage = () => {
     try {
-      const state = JSON.parse(localStorage.getItem("state"));
-      if (state) {
-        this.setState({
-          isUserLoggedIn: state.isUserLoggedIn,
-          mStocks: state.mStocks
-        });
+      if (localStorage.getItem("mina-aktier") != null) {
+        const state = JSON.parse(localStorage.getItem("mina-aktier"));
+        if (state) {
+          this.setState({
+            isUserLoggedIn: state.isUserLoggedIn,
+            mStocks: [...state.mStocks]
+          });
+        }
       }
     } catch (e) {
       console.error("Error on loading data from localstorage.", e);
@@ -25,15 +27,30 @@ class StockProvider extends Component {
 
   saveDataToLocalStorage = state => {
     try {
-      localStorage.setItem("state", JSON.stringify(state));
+      localStorage.setItem("mina-aktier", JSON.stringify(state));
     } catch (e) {
       console.error("Error on saving data to localstorage.", e);
     }
   };
 
+  clearState = () => {
+    this.setState({
+      isUserLoggedIn: false,
+      mStocks: []
+    });
+  };
+
+  clearLocalStorage = () => {
+    try {
+      localStorage.setItem("mina-aktier", null);
+    } catch (e) {
+      console.error("Error on clearing localstorage.", e);
+    }
+  };
+
   setIsUserLoggedIn(status) {
     this.setState({
-      issUserLoggedIn: status
+      isUserLoggedIn: status
     });
   }
 
@@ -52,47 +69,66 @@ class StockProvider extends Component {
   };
 
   sendLogin = async (email, password) => {
-    // const that = this;
     try {
       await firebase
         .auth()
         .setPersistence(firebase.auth.Auth.Persistence.SESSION);
       await firebase.auth().signInWithEmailAndPassword(email, password);
-      const user = await firebase.auth().currentUser;
-      if (user) {
-        this.setIsUserLoggedIn(true);
-        this.getStocksFromDB();
-        //that.history.push("/");
-      } else {
-        //that.history.push("/login");
-      }
+      await this.setIsUserLoggedIn(true);
+      const uStocks = await this.getUserStocksFromDB();
+      await this.setStocksToState(uStocks);
+      await this.saveDataToLocalStorage();
     } catch (e) {
       console.error("Error on logging user in.", e);
     }
   };
 
-  getStocksFromDB = () => {
-    const that = this;
-    firebase.auth().onAuthStateChanged(function(user) {
+  sendLogout = () => {
+    firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        that.setUser(user);
-        const userId = user.uid;
-        db.collection("users")
-          .doc(userId)
-          .get()
-          .then(querySnapshot => {
-            const mStocks = querySnapshot.data().mStocks;
-            mStocks.forEach(item => {
-              that.addToList(
-                item.name,
-                item.api_id,
-                item.quantity,
-                item.purchasePrice
-              );
-            });
+        firebase
+          .auth()
+          .signOut()
+          .then(function() {
+            console.log("Log out successfully.");
+          })
+          .catch(function(error) {
+            console.log("Couldn't log user out.", error);
           });
       }
+      this.clearLocalStorage();
+      this.clearState();
     });
+  };
+
+  getUserStocksFromDB = async () => {
+    const user = firebase.auth().currentUser;
+    if (user) {
+      const userId = user.uid;
+      let uStocks = [];
+      await db
+        .collection("users")
+        .doc(userId)
+        .get()
+        .then(querySnapshot => {
+          if (querySnapshot.data().mStocks != null) {
+            uStocks = querySnapshot.data().mStocks;
+          }
+        });
+      return await uStocks;
+    }
+  };
+
+  setStocksToState = stocks => {
+    this.setState({
+      mStocks: stocks
+    });
+  };
+
+  setUserStocksFromDBToState = async () => {
+    const uStocks = await this.getUserStocksFromDB();
+    await this.setStocksToState(uStocks);
+    await this.saveDataToLocalStorage(this.state);
   };
 
   addToList = async (name, api_id, quantity, purchasePrice) => {
@@ -111,13 +147,21 @@ class StockProvider extends Component {
       await this.setState(prevState => ({
         mStocks: [...prevState.mStocks, item]
       }));
+      const user = firebase.auth().currentUser;
+      if (user) {
+        const userId = user.uid;
+        await db
+          .collection("users")
+          .doc(userId)
+          .set({ mStocks: this.state.mStocks });
+      }
       await this.saveDataToLocalStorage(this.state);
     } else {
       console.log("Please fill out all fields.");
     }
   };
 
-  async updateStock(api_id) {
+  updateStock = async api_id => {
     const api_url =
       "https://limitless-garden-26844.herokuapp.com/https://www.avanza.se/_mobile/market/stock/";
     try {
@@ -132,7 +176,7 @@ class StockProvider extends Component {
       console.error("Something went wrong during updating stock.", err);
       return 0;
     }
-  }
+  };
 
   updateAllStocks = () => {
     // todo: do not fetch lastPrice if api_key is 0
@@ -140,7 +184,7 @@ class StockProvider extends Component {
     // let stocks = [];
     const user = firebase.auth().currentUser;
     if (user) {
-      const userId = firebase.auth().currentUser.uid;
+      const userId = user.uid;
       console.log(userId);
       firebase
         .collection("users")
@@ -149,59 +193,29 @@ class StockProvider extends Component {
     }
   };
 
-  deleteFromList = index => {
+  updateStocksInDB = stocks => {
     const user = firebase.auth().currentUser;
-    console.log(index);
-    console.log(user);
     if (user) {
       const userId = user.uid;
-      const mStocks = db.collection("users").doc(userId);
-      console.log(mStocks);
-    }
-    /*
-    db.collection("users")
-      .doc(userId)
-      .set({
-        mStocks: that.state.mStocks
-      })
-      .then(() => {
-        console.log("Document successfully written!");
-      })
-      .catch(error => {
-        console.error("Error writing document: ", error);
-      });*/
-  };
-
-  writeUserDataToDB = () => {
-    const that = this;
-    const user = this.state.user;
-    if (user) {
-      const userId = user.uid;
-      const mStocks = this.state.mStocks;
       db.collection("users")
         .doc(userId)
         .set({
-          mStocks
+          mStocks: stocks
         })
-        .then(() => {
-          console.log("Document successfully written!");
-          firebase
-            .auth()
-            .signOut()
-            .then(function() {
-              console.log("Log out successfully.");
-              that.setState({
-                user: {},
-                mStocks: []
-              });
-            })
-            .catch(function(error) {
-              console.log("Couldn't log user out.", error);
-            });
-        })
+        .then()
         .catch(error => {
-          console.error("Error writing document: ", error);
+          console.error("Error writing stocks to DB: ", error);
         });
+    }
+  };
+
+  deleteFromList = async index => {
+    const user = firebase.auth().currentUser;
+    if (user) {
+      const uStocks = await this.getUserStocksFromDB();
+      uStocks.splice(index, 1);
+      this.updateStocksInDB(uStocks);
+      this.setStocksToState(uStocks);
     }
   };
 
@@ -212,7 +226,7 @@ class StockProvider extends Component {
           ...this.state,
           loadDataFromLocalStorage: this.loadDataFromLocalStorage,
           loginWithEmailPassword: this.loginWithEmailPassword,
-          writeUserDataToDB: this.writeUserDataToDB,
+          sendLogout: this.sendLogout,
           setUserLoggedIn: this.setUserLoggedIn,
           updateAllStocks: this.updateAllStocks,
           addToList: this.addToList,

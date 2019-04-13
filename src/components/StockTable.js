@@ -76,7 +76,7 @@ class StockTable extends Component {
     return (
       <React.Fragment>
         <tbody>
-          {mStocks.map((item, index) => {
+          { mStocks.map((item, index) => {
             const { name, quantity, purchasePrice, lastPrice } = item;
             const mYield = this.calcYield(lastPrice, purchasePrice, quantity);
             const mYieldPercent = this.calcYieldPercent(

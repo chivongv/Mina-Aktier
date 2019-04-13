@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { StockConsumer } from "../context";
+import firebase from "../firebase.js";
 
 class Login extends Component {
   constructor(props) {
@@ -20,19 +21,21 @@ class Login extends Component {
     });
   };
 
-  handleSubmit = event => {
+  handleSubmit = async (event, loginWithEmailPassword) => {
     event.preventDefault();
-    this.setState = {
-      email: "",
-      password: ""
-    };
+    await loginWithEmailPassword(this.state.email, this.state.password);
+    const user = await firebase.auth().currentUser;
+    await console.log(user != null);
+    if (user) {
+      this.props.history.push("/");
+    }
   };
 
   render() {
     return (
       <StockConsumer>
         {data => {
-          if (!data.user) {
+          if (!data.isUserLoggedIn) {
             return (
               <div className="login-container form-container">
                 <h2>Logga in</h2>
@@ -52,11 +55,8 @@ class Login extends Component {
                 />
                 <button
                   type="button"
-                  onClick={() =>
-                    data.loginWithEmailPassword(
-                      this.state.email,
-                      this.state.password
-                    )
+                  onClick={event =>
+                    this.handleSubmit(event, data.loginWithEmailPassword)
                   }
                   className="btn btn_login btn-blue"
                 >
