@@ -1,79 +1,140 @@
 import React, { Component } from "react";
-import firebase from "./firebase.js";
-import { stocksAPI } from "./data";
+import firebase, { db } from "./firebase.js";
 
 const StockContext = React.createContext();
 
 class StockProvider extends Component {
   state = {
+    user: null,
     mStocks: []
   };
 
-  setInitStocks = () => {
+  loadDataFromLocalStorage = () => {
+    const stocks = localStorage.getItem("mStocks");
+    if (stocks) {
+      console.log(stocks);
+      this.setState({
+        mStocks: stocks
+      });
+      console.log(this.state.mStocks);
+    }
+  };
+
+  saveDataInLocalStorage = () => {
+    if (localStorage.getItem("mStocks")) {
+      console.log(localStorage.getItem("mStocks"));
+      document.documentElement.setAttribute("mStocks", this.state.mStocks);
+    }
+  };
+
+  setUser(user) {
     this.setState({
-      mStocks: [
-        {
-          label: "Investor A",
-          quantity: "50",
-          purchasePrice: "355",
-          lastPrice: "415.7"
-        },
-        {
-          label: "Investor B",
-          quantity: "15",
-          purchasePrice: "435",
-          lastPrice: "413.8"
-        },
-        {
-          label: "Tesla",
-          quantity: "10",
-          purchasePrice: "435",
-          lastPrice: "345.75"
-        }
-      ]
+      user
+    });
+  }
+
+  loginWithEmailPassword = (email, password) => {
+    if (this.isEmailValid(email) > 0 && this.isPasswordValid(password)) {
+      this.sendLogin(email, password);
+    }
+  };
+
+  isEmailValid = email => {
+    return email.length > 0;
+  };
+
+  isPasswordValid = password => {
+    return password.length > 0;
+  };
+
+  sendLogin = (email, password) => {
+    const that = this;
+    firebase
+      .auth()
+      .setPersistence(firebase.auth.Auth.Persistence.SESSION)
+      .then(() => {
+        firebase
+          .auth()
+          .signInWithEmailAndPassword(email, password)
+          .then(() => {
+            firebase.auth().onAuthStateChanged(function(user) {
+              that.setUser(user);
+              if (user) {
+                that.getStocksFromDB();
+                //that.history.push("/");
+              } else {
+                //that.history.push("/login");
+              }
+            });
+          })
+          .catch(function(error) {
+            console.log(error.code, error.message);
+          });
+      });
+  };
+
+  getStocksFromDB = () => {
+    const that = this;
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        that.setUser(user);
+        const userId = user.uid;
+        db.collection("users")
+          .doc(userId)
+          .get()
+          .then(querySnapshot => {
+            const mStocks = querySnapshot.data().mStocks;
+            mStocks.forEach(item => {
+              that.addToList(
+                item.name,
+                item.api_id,
+                item.quantity,
+                item.purchasePrice
+              );
+            });
+          });
+      }
     });
   };
 
   componentDidMount() {
-    this.setInitStocks();
+    const that = this;
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        that.setUser(user);
+      }
+    });
   }
 
-  addToList = (label, quantity, purchasePrice) => {
-    if (label.length > 0 && quantity.length > 0 && purchasePrice.length > 0) {
-      const api_id = stocksAPI[label];
-      // console.log("api_id", api_id);
+  addToList = (name, api_id, quantity, purchasePrice) => {
+    if (name.length > 0 && quantity > 0 && purchasePrice > 0) {
       let lastPrice = 0;
       let item = {
-        label,
+        name,
+        api_id,
         quantity,
         purchasePrice,
-        lastPrice
+        lastPrice: 0
       };
-      this.setState(prevState => ({
-        mStocks: [...prevState.mStocks, item]
-      }));
       if (api_id) {
         this.updateStock(api_id).then(val => {
           lastPrice = val;
           item = {
-            label,
+            name,
+            api_id,
             quantity,
             purchasePrice,
             lastPrice
           };
-          const newStocks = [...this.state.mStocks];
-          newStocks.pop();
-          newStocks.push(item);
-          this.setState({
-            mStocks: [...newStocks]
-          });
-          // todo: update lastPrice in stock in state and db
-          // push new item into db
+          this.setState(prevState => ({
+            mStocks: [...prevState.mStocks, item]
+          }));
         });
       }
+    } else {
+      console.log("Please fill out all fields.");
     }
   };
-  // todo: give unique id for each stock to delete the stock in state
 
   async updateStock(api_id) {
     const api_url =
@@ -82,7 +143,6 @@ class StockProvider extends Component {
       let res = await fetch(api_url + api_id);
       if (res.status === 200) {
         let data = await res.json();
-        // console.log(data);
         return data.lastPrice;
       } else {
         return 0;
@@ -94,30 +154,80 @@ class StockProvider extends Component {
   }
 
   updateAllStocks = () => {
-    const api_url =
-      "https://limitless-garden-26844.herokuapp.com/https://www.avanza.se/_mobile/market/stock/";
-    fetch(api_url)
-      .then(res => {
-        if (res.status === 200) {
-          return res.json();
-        }
-      })
-      .then(data => {
-        if (data) {
-          console.log(data);
-        }
-      })
-      .catch(err => {
-        console.error("Error!", err);
-      });
+    // todo: do not fetch lastPrice if api_key is 0
+    // otherwise loop through mStocks and fetch to update lastPrice
+    // let stocks = [];
+    const user = firebase.auth().currentUser;
+    if (user) {
+      const userId = firebase.auth().currentUser.uid;
+      console.log(userId);
+      firebase
+        .collection("users")
+        .doc(userId)
+        .then({});
+    }
   };
 
   saveEditing = id => {
     console.log("in save");
   };
 
-  deleteFromList = id => {
-    console.log("in delete");
+  deleteFromList = index => {
+    const user = this.state.user;
+    if (user) {
+      const userId = user.uid;
+      const mStocks = db.collection("users").doc(userId);
+      console.log(mStocks);
+    }
+    // this.setState(prevState => {
+    //   mStocks: prevState.mStocks.splice(index, 1);
+    // });
+    // console.log(this.state.mStocks);
+    /*
+    db.collection("users")
+      .doc(userId)
+      .set({
+        mStocks: that.state.mStocks
+      })
+      .then(() => {
+        console.log("Document successfully written!");
+      })
+      .catch(error => {
+        console.error("Error writing document: ", error);
+      });*/
+  };
+
+  writeUserDataToDB = () => {
+    const that = this;
+    const user = this.state.user;
+    if (user) {
+      const userId = user.uid;
+      const mStocks = this.state.mStocks;
+      db.collection("users")
+        .doc(userId)
+        .set({
+          mStocks
+        })
+        .then(() => {
+          console.log("Document successfully written!");
+          firebase
+            .auth()
+            .signOut()
+            .then(function() {
+              console.log("Log out successfully.");
+              that.setState({
+                user: {},
+                mStocks: []
+              });
+            })
+            .catch(function(error) {
+              console.log("Couldn't log user out.", error);
+            });
+        })
+        .catch(error => {
+          console.error("Error writing document: ", error);
+        });
+    }
   };
 
   render() {
@@ -125,6 +235,8 @@ class StockProvider extends Component {
       <StockContext.Provider
         value={{
           ...this.state,
+          loginWithEmailPassword: this.loginWithEmailPassword,
+          writeUserDataToDB: this.writeUserDataToDB,
           setUserLoggedIn: this.setUserLoggedIn,
           updateAllStocks: this.updateAllStocks,
           addToList: this.addToList,

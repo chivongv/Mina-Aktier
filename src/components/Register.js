@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import firebase from "../firebase.js";
+import { Redirect } from "react-router-dom";
 
 class Register extends Component {
   constructor(props) {
@@ -63,14 +64,19 @@ class Register extends Component {
 
   verifyUserEmail = () => {
     const user = firebase.auth().currentUser;
-    user
-      .sendEmailVerification()
-      .then(function() {
-        console.log("Email verification sent.");
-      })
-      .catch(function(error) {
-        console.log("Something went wrong during sending email verification.", error);
-      });
+    if (user) {
+      user
+        .sendEmailVerification()
+        .then(function() {
+          console.log("Email verification sent.");
+        })
+        .catch(function(error) {
+          console.log(
+            "Something went wrong during sending email verification.",
+            error
+          );
+        });
+    }
   };
 
   handleSubmit = event => {
@@ -78,7 +84,10 @@ class Register extends Component {
     if (this.validateForm()) {
       console.log("validation passed");
       this.sendRegistration();
-      this.verifyUserEmail();
+      setTimeout(() => {
+        this.verifyUserEmail();
+        return <Redirect to="/" />;
+      }, 1500);
     } else {
       console.log("validation failed");
       // todo: let user clearly know the errors
@@ -87,7 +96,8 @@ class Register extends Component {
 
   render() {
     return (
-      <div className="login-container">
+      <div className="login-container form-container">
+        <h2>Registrera</h2>
         <form onSubmit={event => this.handleSubmit(event)}>
           <input
             type="email"

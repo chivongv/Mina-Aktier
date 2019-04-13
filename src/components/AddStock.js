@@ -1,12 +1,14 @@
-import React, { Component } from "react";
-import { StockConsumer } from "../context";
+import React, { PureComponent } from "react";
+import { stockData } from "../data";
 
-class AddStock extends Component {
+class AddStock extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
+      stocks: stockData,
       suggestions: [],
-      label: "",
+      name: "",
+      api_id: 0,
       quantity: "",
       purchasePrice: ""
     };
@@ -21,17 +23,23 @@ class AddStock extends Component {
     }));
   };
 
+  filterSuggestions = value => {
+    let suggestions = [];
+    if (value.length > 0) {
+      suggestions = this.state.stocks.filter(stock => {
+        return stock.name.toLowerCase().search(value.toLowerCase()) !== -1;
+      });
+    }
+    this.setState({
+      name: value,
+      suggestions
+    });
+  };
+
   handleChange(event) {
     const { name, value } = event.target;
-    if (name === "label") {
-      const { items } = this.props;
-      let suggestions = [];
-      const regex = new RegExp(`${value}`, "i");
-      suggestions = items.filter(v => regex.test(v));
-      this.setState({
-        suggestions,
-        label: value
-      });
+    if (name === "name") {
+      this.filterSuggestions(value);
     } else {
       this.setState({
         [name]: value
@@ -39,34 +47,44 @@ class AddStock extends Component {
     }
   }
 
-  resetForm() {
+  submitForm = () => {
+    this.props.addToList(
+      this.state.name,
+      this.state.api_id,
+      this.state.quantity,
+      this.state.purchasePrice
+    );
+    this.resetForm();
+  }
+
+  resetForm = () => {
     this.setState({
-      label: "",
-      quantity: "",
-      purchasePrice: ""
+      name: "",
+      api_id: 0,
+      quantity: 0,
+      purchasePrice: 0
     });
   }
 
   renderSuggestions() {
-    const { suggestions } = this.state;
-    if (suggestions.length === 0) {
-      return null;
+    const { name, suggestions } = this.state;
+    if (name.length > 0) {
+      return suggestions.slice(0, 10).map((item, index) => (
+        <div
+          className="list-item"
+          key={index}
+          onClick={() => {
+            this.setState({
+              name: item.name,
+              api_id: item.api_id,
+              suggestions: []
+            });
+          }}
+        >
+          {item.name}
+        </div>
+      ));
     }
-    // todo: fix a fixt number of suggestions?
-    return (
-      <div>
-        {suggestions.map(item => (
-          <div
-            className="list-item"
-            key={item}
-            onSelect={() => this.suggestionSelected(item)}
-            onClick={() => this.suggestionSelected(item)}
-          >
-            {item}
-          </div>
-        ))}
-      </div>
-    );
   }
 
   render() {
@@ -75,47 +93,39 @@ class AddStock extends Component {
         <div className="AutoCompleteText">
           <input
             type="text"
-            name="label"
-            value={this.state.label}
+            name="name"
+            value={this.state.name}
             placeholder="Aktienamn"
             onChange={this.handleChange}
+            autoComplete="off"
           />
           {this.renderSuggestions()}
         </div>
         <input
-          type="text"
+          type="number"
           value={this.state.quantity}
           name="quantity"
           placeholder="Antal"
           onChange={this.handleChange}
+          autoComplete="off"
         />
         <input
-          type="text"
+          type="number"
           value={this.state.purchasePrice}
           name="purchasePrice"
           placeholder="Inköpspris"
           onChange={this.handleChange}
+          autoComplete="off"
         />
-        <StockConsumer>
-          {data => {
-            return (
-              <button
-                type="submit"
-                onClick={() => {
-                  data.addToList(
-                    this.state.label,
-                    this.state.quantity,
-                    this.state.purchasePrice
-                  );
-                  this.resetForm();
-                }}
-                className="btn btn_addStock btn-blue"
-              >
-                Lägg till aktie
-              </button>
-            );
+        <button
+          type="button"
+          onClick={() => {
+            this.submitForm();
           }}
-        </StockConsumer>
+          className="btn btn_addStock btn-blue"
+        >
+          Lägg till aktie
+        </button>
       </div>
     );
   }

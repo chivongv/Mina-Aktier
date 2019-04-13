@@ -1,22 +1,23 @@
 import React from "react";
 import firebase from "../firebase.js";
 import { Redirect } from "react-router-dom";
+import { StockConsumer } from "../context";
 
 function Logout() {
-  firebase.auth().onAuthStateChanged(function(user) {
-    if (user) {
-      firebase
-        .auth()
-        .signOut()
-        .then(function() {
-          console.log("Log out successfully.");
-        })
-        .catch(function(error) {
-          console.log("Couldn't log user out.", error);
-        });
-    }
-  });
-  return <Redirect to="/login" />;;
+  const user = firebase.auth().currentUser;
+  if (user) {
+    return (
+      <React.Fragment>
+        <StockConsumer>
+          {data => {
+            data.writeUserDataToDB();
+          }}
+        </StockConsumer>
+        <Redirect to="/" />;
+      </React.Fragment>
+    );
+  }
+  return <Redirect to="/login" />;
 }
 
 export default Logout;

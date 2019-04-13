@@ -5,16 +5,17 @@ class StockTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isEditingStock: false
+      totalSum: 0,
+      totalYield: 0
     };
     this.generateTableHeaders = this.generateTableHeaders.bind(this);
     this.generateTableData = this.generateTableData.bind(this);
   }
 
-  genUID() {}
-
   calcYield(lastPrice, purchasePrice, quantity) {
-    return lastPrice > 0 ? Math.round((lastPrice - purchasePrice) * quantity) : 0;
+    return lastPrice > 0
+      ? Math.round((lastPrice - purchasePrice) * quantity)
+      : 0;
   }
 
   calcYieldPercent(mYield, total) {
@@ -25,11 +26,7 @@ class StockTable extends Component {
     return mYield >= 0 ? "positive" : "negative";
   }
 
-  handleEditing = () => {
-    this.setState({
-      isEditingStock: !this.state.isEditingStock
-    });
-  };
+  handleEditing = () => {};
 
   generateTableHeaders() {
     return (
@@ -47,16 +44,19 @@ class StockTable extends Component {
     );
   }
 
+  handleClick(index) {
+    console.log(index);
+  }
+
   generateTableData() {
-    let totalSum = 0;
-    let totalYield = 0;
+    let { totalSum, totalYield } = this.state;
     return (
       <React.Fragment>
         <tbody>
           <StockConsumer>
             {data => {
-              return data.mStocks.map(item => {
-                const { label, quantity, purchasePrice, lastPrice } = item;
+              return data.mStocks.map((item, index) => {
+                const { name, quantity, purchasePrice, lastPrice } = item;
                 const mYield = this.calcYield(
                   lastPrice,
                   purchasePrice,
@@ -70,8 +70,8 @@ class StockTable extends Component {
                 totalYield += mYield;
                 const textStatus = this.setTextStatus(mYield);
                 return (
-                  <tr key={quantity}>
-                    <td>{label}</td>
+                  <tr key={index}>
+                    <td>{name}</td>
                     <td>
                       <div className="row_data" col_name="quantity">
                         {quantity}
@@ -88,41 +88,24 @@ class StockTable extends Component {
                     <td>
                       <StockConsumer>
                         {data => {
-                          if (this.state.isEditingStock) {
-                            return (
-                              <div className="options">
-                                <button
-                                  className="btn btn_save btn-green"
-                                  onClick={() => data.saveEditing()}
-                                >
-                                  Save
-                                </button>
-                                <button
-                                  className="btn btn_cancel btn-yellow"
-                                  onClick={() => this.handleEditing()}
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  className="btn btn_delete btn-red"
-                                  onClick={() => data.deleteFromList()}
-                                >
-                                  Delete
-                                </button>
-                              </div>
-                            );
-                          } else {
-                            return (
+                          return (
+                            <div className="options">
                               <span className="btn_edit">
                                 <button
                                   className="btn btn-blue"
                                   onClick={this.handleEditing}
                                 >
-                                  Edit
+                                  Redigera
                                 </button>
                               </span>
-                            );
-                          }
+                              <button
+                                className="btn btn_delete btn-red"
+                                onClick={() => data.deleteFromList(index)}
+                              >
+                                Ta bort
+                              </button>
+                            </div>
+                          );
                         }}
                       </StockConsumer>
                     </td>
@@ -145,7 +128,7 @@ class StockTable extends Component {
                   <tr>
                     <td>Totalt alla aktier: </td>
                     <td colSpan="2" />
-                    <td>{totalSum} kr</td>
+                    <td>{Math.round(totalSum)} kr</td>
                     <td className={textStatus}>{totalYieldPercent}%</td>
                     <td className={textStatus}>{Math.round(totalYield)} kr</td>
                     <td />
