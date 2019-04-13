@@ -77,7 +77,7 @@ class StockProvider extends Component {
       await this.setIsUserLoggedIn(true);
       const uStocks = await this.getUserStocksFromDB();
       await this.setStocksToState(uStocks);
-      await this.saveDataToLocalStorage();
+      await this.saveDataToLocalStorage(this.state);
     } catch (e) {
       console.error("Error on logging user in.", e);
     }
@@ -119,6 +119,12 @@ class StockProvider extends Component {
     }
   };
 
+  addStockToState = stock => {
+    this.setState(prevState => ({
+      mStocks: [...prevState.mStocks, stock]
+    }));
+  };
+
   setStocksToState = stocks => {
     this.setState({
       mStocks: stocks
@@ -135,7 +141,7 @@ class StockProvider extends Component {
     if (name.length > 0 && quantity > 0 && purchasePrice > 0) {
       let lastPrice = 0;
       if (api_id) {
-        lastPrice = await this.updateStock(api_id);
+        lastPrice = await this.fetchStockLastPrice(api_id);
       }
       const item = await {
         name,
@@ -144,9 +150,7 @@ class StockProvider extends Component {
         purchasePrice,
         lastPrice
       };
-      await this.setState(prevState => ({
-        mStocks: [...prevState.mStocks, item]
-      }));
+      await this.addStockToState(item);
       const user = firebase.auth().currentUser;
       if (user) {
         const userId = user.uid;
@@ -161,7 +165,7 @@ class StockProvider extends Component {
     }
   };
 
-  updateStock = async api_id => {
+  fetchStockLastPrice = async api_id => {
     const api_url =
       "https://limitless-garden-26844.herokuapp.com/https://www.avanza.se/_mobile/market/stock/";
     try {
@@ -209,14 +213,15 @@ class StockProvider extends Component {
     }
   };
 
-  deleteFromList = async index => {
+  deleteFromList = index => {
+    let mStocks = [...this.state.mStocks];
+    mStocks.splice(index, 1);
+    this.setStocksToState(mStocks);
     const user = firebase.auth().currentUser;
     if (user) {
-      const uStocks = await this.getUserStocksFromDB();
-      uStocks.splice(index, 1);
-      this.updateStocksInDB(uStocks);
-      this.setStocksToState(uStocks);
+      this.updateStocksInDB(mStocks);
     }
+    this.saveDataToLocalStorage(this.state);
   };
 
   render() {
