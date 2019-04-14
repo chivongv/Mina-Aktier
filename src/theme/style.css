@@ -122,8 +122,21 @@ html, body{
   padding: 1rem 0;
 }
 
+.form-container h2 {
+  color: var(--color-headings);
+}
+
 .form-container input {
   margin-bottom: 10px;
+}
+
+.form-container .btn {
+  margin: 0.5rem auto 2.5rem;
+}
+
+.form-container .navs a {
+  padding: 1rem;
+  color: var(--color-text);
 }
 
 /* nav */

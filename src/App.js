@@ -31,7 +31,7 @@ class App extends Component {
                   render={() => (
                     <Register
                       loadDataFromLocalStorage={
-                        this.props.data.loadDataFromLocalStorage
+                        data.loadDataFromLocalStorage
                       }
                     />
                   )}

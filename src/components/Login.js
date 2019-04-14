@@ -13,6 +13,10 @@ class Login extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  componentDidMount() {
+    this.props.loadDataFromLocalStorage();
+  }
+
   handleChange = event => {
     const { name, value } = event.target;
     this.setState({
@@ -30,30 +34,26 @@ class Login extends Component {
       return (
         <div className="login-container form-container">
           <h2>Logga in</h2>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            onChange={this.handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Lösenord"
-            onChange={this.handleChange}
-            required
-          />
-          <button
-            type="button"
-            onClick={event =>
-              this.handleSubmit(event)
-            }
-            className="btn btn_login btn-blue"
-          >
-            Logga in
-          </button>
-          <div>
+          <form onSubmit={event => this.handleSubmit(event)}>
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              onChange={this.handleChange}
+              required
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Lösenord"
+              onChange={this.handleChange}
+              required
+            />
+            <button type="submit" className="btn btn_login btn-blue">
+              Logga in
+            </button>
+          </form>
+          <div className="navs">
             <Link to="/">Tillbaka</Link>
             <Link to="/">Glöm lösenord</Link>
             <Link to="/register">Skapa konto</Link>

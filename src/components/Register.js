@@ -15,6 +15,10 @@ class Register extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  componentDidMount() {
+    this.props.loadDataFromLocalStorage();
+  }
+
   handleChange = event => {
     const { name, value } = event.target;
     this.setState({
@@ -123,7 +127,7 @@ class Register extends Component {
             Registrera
           </button>
         </form>
-        <div>
+        <div className="navs">
           <Link to="/">Tillbaka</Link>
           <Link to="/login">Redan skapat</Link>
         </div>
