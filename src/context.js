@@ -14,10 +14,7 @@ class StockProvider extends Component {
       if (localStorage.getItem("mina-aktier") != null) {
         const state = JSON.parse(localStorage.getItem("mina-aktier"));
         if (state) {
-          this.setState({
-            isUserLoggedIn: state.isUserLoggedIn,
-            mStocks: [...state.mStocks]
-          });
+          this.setStateFromState(state);
         }
       }
     } catch (e) {
@@ -31,6 +28,17 @@ class StockProvider extends Component {
     } catch (e) {
       console.error("Error on saving data to localstorage.", e);
     }
+  };
+
+  setStateFromState = state => {
+    let { isUserLoggedIn, mStocks } = state;
+    if (mStocks == null) {
+      mStocks = [];
+    }
+    this.setState({
+      isUserLoggedIn: isUserLoggedIn,
+      mStocks: mStocks
+    });
   };
 
   clearState = () => {
@@ -74,31 +82,30 @@ class StockProvider extends Component {
         .auth()
         .setPersistence(firebase.auth.Auth.Persistence.SESSION);
       await firebase.auth().signInWithEmailAndPassword(email, password);
-      await this.setIsUserLoggedIn(true);
       const uStocks = await this.getUserStocksFromDB();
       await this.setStocksToState(uStocks);
+      await this.setIsUserLoggedIn(true);
       await this.saveStateToLocalStorage(this.state);
     } catch (e) {
       console.error("Error on logging user in.", e);
     }
   };
 
-  sendLogout = () => {
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        firebase
-          .auth()
-          .signOut()
-          .then(function() {
-            console.log("Log out successfully.");
-          })
-          .catch(function(error) {
-            console.log("Couldn't log user out.", error);
-          });
-      }
-      this.clearLocalStorage();
-      this.clearState();
-    });
+  sendLogout = async () => {
+    const user = await firebase.auth().currentUser;
+    if (user) {
+      firebase
+        .auth()
+        .signOut()
+        .then(function() {
+          console.log("Log out successfully.");
+        })
+        .catch(function(error) {
+          console.log("Couldn't log user out.", error);
+        });
+    }
+    await this.clearLocalStorage();
+    await this.clearState();
   };
 
   getUserStocksFromDB = async () => {
@@ -120,15 +127,19 @@ class StockProvider extends Component {
   };
 
   addStockToState = stock => {
-    this.setState(prevState => ({
-      mStocks: [...prevState.mStocks, stock]
-    }));
+    if (stock != null) {
+      this.setState(prevState => ({
+        mStocks: [...prevState.mStocks, stock]
+      }));
+    }
   };
 
   setStocksToState = stocks => {
-    this.setState({
-      mStocks: stocks
-    });
+    if (stocks != null) {
+      this.setState({
+        mStocks: stocks
+      });
+    }
   };
 
   setUserStocksFromDBToState = async () => {

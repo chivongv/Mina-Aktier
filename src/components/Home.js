@@ -12,7 +12,7 @@ class Home extends Component {
 
   renderUserButtons() {
     const user = firebase.auth().currentUser;
-    if (user) {
+    if (user || this.props.data.isUserLoggedIn) {
       return (
         <li>
           <button

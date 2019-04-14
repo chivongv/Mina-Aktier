@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import firebase from "../firebase.js";
 import { Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 class Register extends Component {
   constructor(props) {
@@ -124,6 +125,10 @@ class Register extends Component {
             Registrera
           </button>
         </form>
+        <div>
+          <Link to="/">Tillbaka</Link>
+          <Link to="/login">Redan skapat</Link>
+        </div>
       </div>
     );
   }

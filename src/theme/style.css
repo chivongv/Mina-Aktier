@@ -5,6 +5,16 @@
   box-sizing: border-box;
 }
 
+:root {
+  --dark-blue: #3694ff;
+  --secondary-grey: #434343;
+  --main-white: #fff;
+  --main-grey: #b5b5b5;
+  --dark-bg: #15202b;
+  --light-bg: #ebebeb;
+  --secondary-blue: #17a2b8;
+}
+
 html {
   height: 100%;
   font-size: 'Mont-serrat', sans-serif;
@@ -15,14 +25,15 @@ html {
   --bg-panel: #fcfcfc;
   --color-headings: #000;
   --color-text: #333;
+  --btn-blue: #17a2b8;
 }
 
 html[data-theme='dark'] {
   --bg: #15202b;
   --bg-panel: #434343;
   --color-headings: #3694ff;
-  /* --color-text: #b5b5b5; */
   --color-text: #b5b5b5;
+  --btn-blue: #3694ff;
 }
 
 body {
@@ -54,6 +65,7 @@ html, body{
 .left {
   order: 1;
   padding: 2rem 1rem;
+  width: 80vw;
 }
 
 .right {
@@ -101,14 +113,6 @@ html, body{
 #switch:checked:before {
   left: calc(100% - 2px);
   transform: translateX(-100%);
-}
-
-html.transition,
-html.transition *,
-html.transition *:before,
-html.transition *:after {
-  transition: all 1000ms !important;
-  transition-delay: 0 !important;
 }
 
 /* form-container */
@@ -161,8 +165,8 @@ html.transition *:after {
   border-color: #ffc107;
 }
 .btn-blue {
-  background-color: #17a2b8;
-  border-color: #17a2b8;
+  background-color: var(--btn-blue);
+  border-color: var(--btn-blue);
 }
 
 .btn_delete {
@@ -187,6 +191,7 @@ html.transition *:after {
   color: var(--color-text);
   font-size: 1.25rem;
 }
+
 .table th {
   color: inherit;
 }
@@ -194,6 +199,7 @@ html.transition *:after {
 .table th {
   padding: 5px;
   border: 0;
+  transition: 0.5s;
 }
 
 .table tr {
@@ -234,7 +240,6 @@ input {
 
 input::placeholder {
   color: var(--color-text);
-  transition: 1s;
 }
 
 /* login */
@@ -255,7 +260,6 @@ input::placeholder {
 }
 
 /* AutoCompleteText */
-
 .AutoCompleteText > div {
   list-style: none;
   margin-top: -10px;
@@ -268,4 +272,23 @@ input::placeholder {
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   padding: 10px 5px;
   box-sizing: border-box;
+}
+
+/* Footer */
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: var(--color-text);
+  transition: 1s;
+}
+
+html.transition,
+html.transition *,
+html.transition *:before,
+html.transition *:after {
+  transition: all 1000ms !important;
+  transition-delay: 0 !important;
 }

@@ -9,7 +9,7 @@ class AddStock extends PureComponent {
       suggestions: [],
       name: "",
       api_id: 0,
-      quantity: "",
+      quantity: '',
       purchasePrice: ""
     };
     this.handleChange = this.handleChange.bind(this);
@@ -47,7 +47,7 @@ class AddStock extends PureComponent {
     }
   }
 
-  submitForm = () => {
+  submitForm = async () => {
     this.props.addToList(
       this.state.name,
       this.state.api_id,
@@ -61,8 +61,8 @@ class AddStock extends PureComponent {
     this.setState({
       name: "",
       api_id: 0,
-      quantity: 0,
-      purchasePrice: 0
+      quantity: '',
+      purchasePrice: ''
     });
   }
 

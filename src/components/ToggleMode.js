@@ -5,25 +5,25 @@ class ToggleMode extends Component {
   state = {
     checked: false
   }
-  
+
   fadeTransition = () => {
     document.documentElement.classList.add('transition');
     window.setTimeout(() => {
       document.documentElement.classList.remove('transition');
-    }, 750)
+    }, 1500)
   }
 
   handleClick(){
     this.fadeTransition()
     if(!this.state.checked){
       document.documentElement.setAttribute('data-theme','dark')
-      localStorage.setItem('toggle-theme', 'dark');
+      localStorage.setItem('mina-aktier-theme', 'dark');
       this.setState({
         checked: true
       })
     }else{
       document.documentElement.setAttribute('data-theme','light')
-      localStorage.setItem('toggle-theme', 'light');
+      localStorage.setItem('mina-aktier-theme', 'light');
       this.setState({
         checked: false
       })
@@ -31,16 +31,16 @@ class ToggleMode extends Component {
   }
 
   handleChange() {
-    if(localStorage.getItem('toggle-theme') === "light"){
+    if(localStorage.getItem('mina-aktier-theme') === "light"){
+      document.documentElement.setAttribute('data-theme','light')
       this.setState({
         checked: false
       })
-      document.documentElement.setAttribute('data-theme','light')
     }else{
+      document.documentElement.setAttribute('data-theme','dark')
       this.setState({
         checked: true
       })
-      document.documentElement.setAttribute('data-theme','dark')
     }
   }
 

@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
-import { StockConsumer } from "../context";
-import firebase from "../firebase.js";
+import { Link } from "react-router-dom";
 
 class Login extends Component {
   constructor(props) {
@@ -24,52 +23,46 @@ class Login extends Component {
   handleSubmit = async (event, loginWithEmailPassword) => {
     event.preventDefault();
     await loginWithEmailPassword(this.state.email, this.state.password);
-    const user = await firebase.auth().currentUser;
-    await console.log(user != null);
-    if (user) {
-      this.props.history.push("/");
-    }
   };
 
   render() {
-    return (
-      <StockConsumer>
-        {data => {
-          if (!data.isUserLoggedIn) {
-            return (
-              <div className="login-container form-container">
-                <h2>Logga in</h2>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  onChange={this.handleChange}
-                  required
-                />
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Lösenord"
-                  onChange={this.handleChange}
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={event =>
-                    this.handleSubmit(event, data.loginWithEmailPassword)
-                  }
-                  className="btn btn_login btn-blue"
-                >
-                  Logga in
-                </button>
-              </div>
-            );
-          } else {
-            return <Redirect to="/" />;
-          }
-        }}
-      </StockConsumer>
-    );
+    if (!this.props.isUserLoggedIn) {
+      return (
+        <div className="login-container form-container">
+          <h2>Logga in</h2>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            onChange={this.handleChange}
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Lösenord"
+            onChange={this.handleChange}
+            required
+          />
+          <button
+            type="button"
+            onClick={event =>
+              this.handleSubmit(event, this.props.loginWithEmailPassword)
+            }
+            className="btn btn_login btn-blue"
+          >
+            Logga in
+          </button>
+          <div>
+            <Link to="/">Tillbaka</Link>
+            <Link to="/">Glöm lösenord</Link>
+            <Link to="/register">Skapa konto</Link>
+          </div>
+        </div>
+      );
+    } else {
+      return <Redirect to="/" />;
+    }
   }
 }
 
