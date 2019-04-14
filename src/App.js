@@ -20,12 +20,22 @@ class App extends Component {
                   path="/login"
                   render={() => (
                     <Login
+                      loadDataFromLocalStorage={data.loadDataFromLocalStorage}
                       isUserLoggedIn={data.isUserLoggedIn}
                       loginWithEmailPassword={data.loginWithEmailPassword}
                     />
                   )}
                 />
-                <Route path="/register" component={Register} />
+                <Route
+                  path="/register"
+                  render={() => (
+                    <Register
+                      loadDataFromLocalStorage={
+                        this.props.data.loadDataFromLocalStorage
+                      }
+                    />
+                  )}
+                />
               </Switch>
               <Footer />
             </React.Fragment>

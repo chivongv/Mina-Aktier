@@ -47,7 +47,13 @@ class Home extends Component {
       <div className="container content">
         <div className="right">
           <React.Fragment>
-            <ToggleMode />
+            <ToggleMode
+              loadDataFromLocalStorage={
+                this.props.data.loadDataFromLocalStorage
+              }
+              checked={this.props.data.checked}
+              toggleUIMode={this.props.data.toggleUIMode}
+            />
             <AddStock addToList={this.props.data.addToList} />
             <button
               className="btn btn-blue"

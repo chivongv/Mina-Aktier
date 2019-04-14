@@ -31,7 +31,7 @@ html {
 html[data-theme='dark'] {
   --bg: #15202b;
   --bg-panel: #434343;
-  --color-headings: #3694ff;
+  --color-headings: var(--dark-blue);
   --color-text: #b5b5b5;
   --btn-blue: #3694ff;
 }

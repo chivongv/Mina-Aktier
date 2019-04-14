@@ -5,16 +5,19 @@ const StockContext = React.createContext();
 
 class StockProvider extends Component {
   state = {
+    checked: false,
+    theme: "light",
     isUserLoggedIn: false,
     mStocks: []
   };
 
-  loadDataFromLocalStorage = () => {
+  loadDataFromLocalStorage = async () => {
     try {
       if (localStorage.getItem("mina-aktier") != null) {
-        const state = JSON.parse(localStorage.getItem("mina-aktier"));
+        const state = await JSON.parse(localStorage.getItem("mina-aktier"));
         if (state) {
-          this.setStateFromState(state);
+          await this.setStateFromState(state);
+          document.documentElement.setAttribute("data-theme", this.state.theme);
         }
       }
     } catch (e) {
@@ -31,15 +34,25 @@ class StockProvider extends Component {
   };
 
   setStateFromState = state => {
-    let { isUserLoggedIn, mStocks } = state;
+    let { checked, theme, isUserLoggedIn, mStocks } = state;
     if (mStocks == null) {
       mStocks = [];
     }
     this.setState({
+      checked: checked,
+      theme: theme,
       isUserLoggedIn: isUserLoggedIn,
       mStocks: mStocks
     });
   };
+
+  toggleUIMode = async () => {
+    await this.setState(prevState => ({
+      checked: !prevState.checked,
+      theme: prevState.theme === 'light' ? 'dark' : 'light'
+    }));
+    this.saveStateToLocalStorage(this.state);
+  }
 
   clearState = () => {
     this.setState({
@@ -84,7 +97,7 @@ class StockProvider extends Component {
       await firebase.auth().signInWithEmailAndPassword(email, password);
       const uStocks = await this.getUserStocksFromDB();
       await this.setStocksToState(uStocks);
-      await this.setIsUserLoggedIn(true);
+      this.setIsUserLoggedIn(true);
       await this.saveStateToLocalStorage(this.state);
     } catch (e) {
       console.error("Error on logging user in.", e);
@@ -105,7 +118,7 @@ class StockProvider extends Component {
         });
     }
     await this.clearLocalStorage();
-    await this.clearState();
+    this.clearState();
   };
 
   getUserStocksFromDB = async () => {
@@ -240,6 +253,7 @@ class StockProvider extends Component {
       <StockContext.Provider
         value={{
           ...this.state,
+          toggleUIMode: this.toggleUIMode,
           loadDataFromLocalStorage: this.loadDataFromLocalStorage,
           loginWithEmailPassword: this.loginWithEmailPassword,
           sendLogout: this.sendLogout,

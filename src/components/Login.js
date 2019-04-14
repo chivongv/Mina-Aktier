@@ -20,9 +20,9 @@ class Login extends Component {
     });
   };
 
-  handleSubmit = async (event, loginWithEmailPassword) => {
+  handleSubmit = (event, loginWithEmailPassword) => {
     event.preventDefault();
-    await loginWithEmailPassword(this.state.email, this.state.password);
+    this.props.loginWithEmailPassword(this.state.email, this.state.password);
   };
 
   render() {
@@ -47,7 +47,7 @@ class Login extends Component {
           <button
             type="button"
             onClick={event =>
-              this.handleSubmit(event, this.props.loginWithEmailPassword)
+              this.handleSubmit(event)
             }
             className="btn btn_login btn-blue"
           >

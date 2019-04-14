@@ -80,15 +80,13 @@ class Register extends Component {
     }
   };
 
-  handleSubmit = event => {
+  handleSubmit = async event => {
     event.preventDefault();
     if (this.validateForm()) {
       console.log("validation passed");
-      this.sendRegistration();
-      setTimeout(() => {
-        this.verifyUserEmail();
-        return <Redirect to="/" />;
-      }, 1500);
+      await this.sendRegistration();
+      await this.verifyUserEmail();
+      return <Redirect to="/" />;
     } else {
       console.log("validation failed");
       // todo: let user clearly know the errors
