@@ -54,7 +54,7 @@ class Home extends Component {
               checked={this.props.data.checked}
               toggleUIMode={this.props.data.toggleUIMode}
             />
-            <AddStock addToList={this.props.data.addToList} />
+            <AddStock addToStockList={this.props.data.addToStockList} />
             <button
               className="btn btn-blue"
               onClick={() => this.props.data.updateAllStocks()}

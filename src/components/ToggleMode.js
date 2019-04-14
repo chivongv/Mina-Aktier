@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 
 class ToggleMode extends Component {
-
   fadeTransition = () => {
     document.documentElement.classList.add("transition");
     window.setTimeout(() => {

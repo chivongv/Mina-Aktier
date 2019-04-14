@@ -47,8 +47,8 @@ class AddStock extends PureComponent {
     }
   }
 
-  submitForm = async () => {
-    this.props.addToList(
+  submitForm = () => {
+    this.props.addToStockList(
       this.state.name,
       this.state.api_id,
       this.state.quantity,

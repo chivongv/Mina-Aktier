@@ -85,8 +85,8 @@ class Register extends Component {
     event.preventDefault();
     if (this.validateForm()) {
       await this.sendRegistration();
-      await this.verifyUserEmail();
-      await this.setState({
+      this.verifyUserEmail();
+      this.setState({
         redirect: true
       })
     } else {

@@ -16,7 +16,7 @@ class StockProvider extends Component {
       if (localStorage.getItem("mina-aktier") != null) {
         const state = await JSON.parse(localStorage.getItem("mina-aktier"));
         if (state) {
-          await this.setStateFromState(state);
+          this.setStateFromState(state);
           document.documentElement.setAttribute("data-theme", this.state.theme);
         }
       }
@@ -82,8 +82,11 @@ class StockProvider extends Component {
           .auth()
           .setPersistence(firebase.auth.Auth.Persistence.SESSION);
         await firebase.auth().signInWithEmailAndPassword(email, password);
-        this.setIsUserLoggedIn(true);
-        await this.setUserDBDataToState();
+        const user = firebase.auth().currentUser;
+        if (user) {
+          this.setIsUserLoggedIn(true);
+          this.setUserDBDataToState();
+        }
       } catch (e) {
         console.error("Error on logging user in.", e);
       }
@@ -98,20 +101,20 @@ class StockProvider extends Component {
     return password.length > 0;
   };
 
-  setUserDBDataToState = async (email, password) => {
+  setUserDBDataToState = async () => {
     try {
       const uStocks = await this.getUserStocksFromDB();
       await this.setStocksToState(uStocks);
-      await this.saveStateToLocalStorage(this.state);
+      this.saveStateToLocalStorage(this.state);
     } catch (e) {
       console.error("Error on setting user data to state.", e);
     }
   };
 
   sendLogout = async () => {
-    const user = await firebase.auth().currentUser;
+    const user = firebase.auth().currentUser;
     if (user) {
-      firebase
+      await firebase
         .auth()
         .signOut()
         .then(function() {
@@ -121,7 +124,7 @@ class StockProvider extends Component {
           console.log("Couldn't log user out.", error);
         });
     }
-    await this.clearLocalStorage();
+    this.clearLocalStorage();
     this.clearState();
   };
 
@@ -139,7 +142,7 @@ class StockProvider extends Component {
             uStocks = querySnapshot.data().mStocks;
           }
         });
-      return await uStocks;
+      return uStocks;
     }
   };
 
@@ -162,14 +165,15 @@ class StockProvider extends Component {
   setUserStocksFromDBToState = async () => {
     const uStocks = await this.getUserStocksFromDB();
     await this.setStocksToState(uStocks);
-    await this.saveStateToLocalStorage(this.state);
+    this.saveStateToLocalStorage(this.state);
   };
 
-  addToList = async (name, api_id, quantity, purchasePrice) => {
+  addToStockList = async (name, api_id, quantity, purchasePrice) => {
     if (name.length > 0 && quantity > 0 && purchasePrice > 0) {
       let lastPrice = 0;
       if (api_id) {
-        lastPrice = await this.fetchStockLastPrice(api_id);
+        let stock = await this.fetchStockFromAPI(api_id);
+        lastPrice = this.getLastPriceFromStock(stock);
       }
       const item = await {
         name,
@@ -182,25 +186,24 @@ class StockProvider extends Component {
       const user = firebase.auth().currentUser;
       if (user) {
         const userId = user.uid;
-        await db
-          .collection("users")
+        db.collection("users")
           .doc(userId)
           .set({ mStocks: this.state.mStocks });
       }
-      await this.saveStateToLocalStorage(this.state);
+      this.saveStateToLocalStorage(this.state);
     } else {
       console.log("Please fill out all fields.");
     }
   };
 
-  fetchStockLastPrice = async api_id => {
+  fetchStockFromAPI = async api_id => {
     const api_url =
       "https://limitless-garden-26844.herokuapp.com/https://www.avanza.se/_mobile/market/stock/";
     try {
       let res = await fetch(api_url + api_id);
       if (res.status === 200) {
         let data = await res.json();
-        return data.lastPrice;
+        return data;
       } else {
         return 0;
       }
@@ -209,6 +212,10 @@ class StockProvider extends Component {
       return 0;
     }
   };
+
+  getLastPriceFromStock(stock) {
+    return stock.lastPrice;
+  }
 
   updateAllStocks = () => {
     // todo: do not fetch lastPrice if api_key is 0
@@ -263,7 +270,7 @@ class StockProvider extends Component {
           sendLogout: this.sendLogout,
           setUserLoggedIn: this.setUserLoggedIn,
           updateAllStocks: this.updateAllStocks,
-          addToList: this.addToList,
+          addToStockList: this.addToStockList,
           saveEditing: this.saveEditing,
           deleteFromList: this.deleteFromList
         }}
