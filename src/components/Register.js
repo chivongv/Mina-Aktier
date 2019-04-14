@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import firebase from "../firebase.js";
-import { Redirect } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 class Register extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      redirect: false,
       email: "",
       password: "",
       password2: ""
@@ -47,23 +47,23 @@ class Register extends Component {
       !this.isPasswordLengthValid(password) ||
       !this.isPasswordLengthValid(password2)
     ) {
+      console.log("Either email or length of the passwords are not valid.");
       return false;
     }
     if (!this.areSamePasswords(password, password2)) {
+      console.log("The passwords are not matching. Please try again.");
       return false;
     }
     return true;
   };
 
-  sendRegistration = () => {
+  sendRegistration = async () => {
     const { email, password } = this.state;
-    firebase
+    await firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
-      .catch(function(error) {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        console.log(errorCode, errorMessage);
+      .catch(e => {
+        console.error("Error on creating user account.", e);
       });
   };
 
@@ -75,11 +75,8 @@ class Register extends Component {
         .then(function() {
           console.log("Email verification sent.");
         })
-        .catch(function(error) {
-          console.log(
-            "Something went wrong during sending email verification.",
-            error
-          );
+        .catch(e => {
+          console.error("Something went wrong during sending email verification.",e);
         });
     }
   };
@@ -87,52 +84,55 @@ class Register extends Component {
   handleSubmit = async event => {
     event.preventDefault();
     if (this.validateForm()) {
-      console.log("validation passed");
       await this.sendRegistration();
       await this.verifyUserEmail();
-      return <Redirect to="/" />;
+      await this.setState({
+        redirect: true
+      })
     } else {
-      console.log("validation failed");
-      // todo: let user clearly know the errors
+      console.log("Validation failed");
     }
   };
 
   render() {
-    return (
-      <div className="login-container form-container">
-        <h2>Registrera</h2>
-        <form onSubmit={event => this.handleSubmit(event)}>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            onChange={this.handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Lösenord"
-            onChange={this.handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="password2"
-            placeholder="Lösenord igen"
-            onChange={this.handleChange}
-            required
-          />
-          <button type="submit" className="btn btn_register btn-blue">
-            Registrera
-          </button>
-        </form>
-        <div className="navs">
-          <Link to="/">Tillbaka</Link>
-          <Link to="/login">Redan skapat</Link>
-        </div>
-      </div>
-    );
+    if(this.state.redirect){
+      return <Redirect to="/" />;
+    }else{
+      return (
+        <div className="login-container form-container">
+          <h2>Registrera</h2>
+          <form onSubmit={event => this.handleSubmit(event)}>
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              onChange={this.handleChange}
+              required
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Lösenord"
+              onChange={this.handleChange}
+              required
+            />
+            <input
+              type="password"
+              name="password2"
+              placeholder="Lösenord igen"
+              onChange={this.handleChange}
+              required
+            />
+            <button type="submit" className="btn btn_register btn-blue">
+              Registrera
+            </button>
+          </form>
+          <div className="navs">
+            <Link to="/">Tillbaka</Link>
+            <Link to="/login">Redan skapat</Link>
+          </div>
+        </div>)
+    }
   }
 }
 

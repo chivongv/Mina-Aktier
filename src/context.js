@@ -49,10 +49,10 @@ class StockProvider extends Component {
   toggleUIMode = async () => {
     await this.setState(prevState => ({
       checked: !prevState.checked,
-      theme: prevState.theme === 'light' ? 'dark' : 'light'
+      theme: prevState.theme === "light" ? "dark" : "light"
     }));
     this.saveStateToLocalStorage(this.state);
-  }
+  };
 
   clearState = () => {
     this.setState({
@@ -75,9 +75,18 @@ class StockProvider extends Component {
     });
   }
 
-  loginWithEmailPassword = (email, password) => {
+  loginWithEmailPassword = async (email, password) => {
     if (this.isEmailValid(email) > 0 && this.isPasswordValid(password)) {
-      this.sendLogin(email, password);
+      try {
+        await firebase
+          .auth()
+          .setPersistence(firebase.auth.Auth.Persistence.SESSION);
+        await firebase.auth().signInWithEmailAndPassword(email, password);
+        this.setIsUserLoggedIn(true);
+        await this.setUserDBDataToState();
+      } catch (e) {
+        console.error("Error on logging user in.", e);
+      }
     }
   };
 
@@ -89,18 +98,13 @@ class StockProvider extends Component {
     return password.length > 0;
   };
 
-  sendLogin = async (email, password) => {
+  setUserDBDataToState = async (email, password) => {
     try {
-      await firebase
-        .auth()
-        .setPersistence(firebase.auth.Auth.Persistence.SESSION);
-      await firebase.auth().signInWithEmailAndPassword(email, password);
       const uStocks = await this.getUserStocksFromDB();
       await this.setStocksToState(uStocks);
-      this.setIsUserLoggedIn(true);
       await this.saveStateToLocalStorage(this.state);
     } catch (e) {
-      console.error("Error on logging user in.", e);
+      console.error("Error on setting user data to state.", e);
     }
   };
 
