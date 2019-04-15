@@ -44,6 +44,14 @@ html, body{
   width: 100%;
 }
 
+.positive {
+  color: #009ecf;
+}
+
+.negative {
+  color: #fd6b60;
+}
+
 #root {
   display: flex;
   flex-direction: column;
@@ -152,6 +160,7 @@ html, body{
 
 .nav ul li {
   list-style: none;
+  margin-left: 10px;
 }
 
 /* reusable */
@@ -222,13 +231,7 @@ html, body{
 .table tfoot {
 }
 
-.positive {
-  color: #009ecf;
-}
 
-.negative {
-  color: #fd6b60;
-}
 
 .row_data.focus() {
   border: 1px solid red;
@@ -273,18 +276,19 @@ input::placeholder {
 }
 
 /* AutoCompleteText */
-.AutoCompleteText > div {
+.autoCompleteText > div {
   list-style: none;
   margin-top: -10px;
   margin-bottom: 10px;
   text-align: left;
 }
 
-.AutoCompleteText .list-item {
+.autoCompleteText .list-item {
   width: 100%;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   padding: 10px 5px;
   box-sizing: border-box;
+  color: var(--color-text);
 }
 
 /* Footer */

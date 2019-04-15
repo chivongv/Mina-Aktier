@@ -90,7 +90,7 @@ class AddStock extends PureComponent {
   render() {
     return (
       <div className="form-container">
-        <div className="AutoCompleteText">
+        <div className="autoCompleteText">
           <input
             type="text"
             name="name"

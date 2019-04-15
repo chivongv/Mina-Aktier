@@ -59,7 +59,7 @@ class Home extends Component {
               className="btn btn-blue"
               onClick={() => this.props.data.updateAllStocks()}
             >
-              Uppdatera tabellen
+              Hämta aktiekurser
             </button>
           </React.Fragment>
         </div>
