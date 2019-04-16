@@ -168,6 +168,10 @@ class StockProvider extends Component {
     this.saveStateToLocalStorage(this.state);
   };
 
+  compareStockName = (s1, s2) => {
+    return (s1.name > s2.name) ? 1 : (s1.name < s2.name) ? -1: 0;
+  }
+
   addToStockList = async (name, api_id, quantity, purchasePrice) => {
     if (name.length > 0 && quantity > 0 && purchasePrice > 0) {
       let lastPrice = 0;
@@ -183,6 +187,8 @@ class StockProvider extends Component {
         lastPrice
       };
       await this.addStockToState(item);
+      let sortedStocks = await [...this.state.mStocks].sort(this.compareStockName);
+      await this.setStocksToState(sortedStocks);
       const user = firebase.auth().currentUser;
       if (user) {
         const userId = user.uid;

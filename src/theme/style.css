@@ -94,10 +94,6 @@ input::placeholder {
   color: var(--color-text);
 }
 
-.content {
-  margin: 0 0.5rem;
-}
-
 .left {
   order: 1;
   padding: 2rem 1rem;
@@ -106,17 +102,40 @@ input::placeholder {
 
 .right {
   order: 2;
-  padding: 2rem 1rem;
+  padding: 2rem 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+/* nav */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+}
+
+.nav ul {
+  position: absolute;
+  top: 1rem;
+  left: 3rem;
+  display: flex;
+  list-style: none;
+}
+
+.nav ul li:nth-child(2n){
+  margin-left: 10px;
+}
+
 /* toggleMode */
 .toggle-container {
   position: absolute;
-  top: 1rem;
-  right: 2rem;
+  top: .5rem;
+  right: 3rem;
 }
 
 #switch {
@@ -180,22 +199,6 @@ input::placeholder {
 .form-container .navs a {
   padding: 1rem;
   color: var(--color-text);
-}
-
-/* nav */
-.nav {
-  position: absolute;
-  top: 1rem;
-  left: 3rem;
-}
-
-.nav ul {
-  display: flex;
-}
-
-.nav ul li {
-  list-style: none;
-  margin-left: 10px;
 }
 
 /* buttons */
@@ -272,10 +275,13 @@ input::placeholder {
   display: flex;
 }
 
+.table .options .btn:nth-child(2n){
+  margin-left: 10px;
+}
+
 .btn_delete {
   white-space: nowrap;
 }
-
 
 /* login */
 .login-container {

@@ -45,6 +45,16 @@ class Home extends Component {
   render() {
     return (
       <div className="container content">
+      <nav className="nav">
+        <ul>{this.renderUserButtons()}</ul>
+        <ToggleMode
+          loadDataFromLocalStorage={
+            this.props.data.loadDataFromLocalStorage
+          }
+          checked={this.props.data.checked}
+          toggleUIMode={this.props.data.toggleUIMode}
+        />
+      </nav>
         <div className="right">
           <React.Fragment>
             <AddStock addToStockList={this.props.data.addToStockList} />
@@ -58,16 +68,6 @@ class Home extends Component {
         </div>
         <div className="left">
           <div className="content-container">
-            <nav className="nav">
-              <ul>{this.renderUserButtons()}</ul>
-            </nav>
-            <ToggleMode
-              loadDataFromLocalStorage={
-                this.props.data.loadDataFromLocalStorage
-              }
-              checked={this.props.data.checked}
-              toggleUIMode={this.props.data.toggleUIMode}
-            />
             <h1>Mina aktier</h1>
             <StockTable
               mStocks={this.props.data.mStocks}
