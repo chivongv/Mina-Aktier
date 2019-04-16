@@ -11,72 +11,81 @@ class StockTable extends Component {
     this.generateTableData = this.generateTableData.bind(this);
   }
 
-  componentDidMount(){
+  componendividMount() {
     this.props.loadDataFromLocalStorage();
   }
 
-  calcYield(lastPrice, purchasePrice, quantity) {
+  calcYield = (lastPrice = 0, purchasePrice = 0, quantity = 0) => {
     return lastPrice > 0
       ? Math.round((lastPrice - purchasePrice) * quantity)
       : 0;
-  }
+  };
 
-  calcYieldPercent(mYield, total) {
+  calcYieldPercent = (mYield, total) => {
     return mYield !== 0 ? parseFloat((mYield * 100) / total).toFixed(2) : 0;
-  }
+  };
 
-  setTextStatus(mYield) {
-    return mYield >= 0 ? "positive" : "negative";
-  }
+  setTextStatus = mYield => {
+    return mYield >= 0 ? "td positive" : "td negative";
+  };
 
   handleEditing = () => {};
 
-  generateTableHeaders() {
+  generateTableHeaders = () => {
     return (
-      <thead>
-        <tr>
-          <th>Aktie</th>
-          <th>Antal</th>
-          <th>Inköpspris [kr]</th>
-          <th>Senast [kr]</th>
-          <th>Avkastning [%]</th>
-          <th>Avkastning [kr]</th>
-          <th />
-        </tr>
-      </thead>
+      <div className="thead">
+        <div className="tr">
+          <div className="th">Aktie</div>
+          <div className="th">Antal</div>
+          <div className="th">Inköpspris</div>
+          <div className="th">Senast</div>
+          <div className="th">Avkastning %</div>
+          <div className="th">Avkastning</div>
+          <div className="th options" />
+        </div>
+      </div>
     );
-  }
+  };
 
   generateTableFooter = (totalYield, totalSum) => {
     if (this.props.mStocks.length > 0) {
       const textStatus = this.setTextStatus(totalYield);
       const totalYieldPercent = this.calcYieldPercent(totalYield, totalSum);
       return (
-        <tr>
-          <td>Totalt alla aktier: </td>
-          <td colSpan="2" />
-          <td>{Math.round(totalSum)} kr</td>
-          <td className={textStatus}>{totalYieldPercent}%</td>
-          <td className={textStatus}>{Math.round(totalYield)} kr</td>
-          <td />
-        </tr>
+        <div className="tfoot">
+          <div className="tr">
+            <div className="td">Totalt alla aktier</div>
+            <div className="td" />
+            <div className="td" />
+            <div className={textStatus} data-title="Marknadsvärde">
+              {Math.round(totalSum)} kr
+            </div>
+            <div className={textStatus} data-title="Totalavkastning [%]">
+              {totalYieldPercent}%
+            </div>
+            <div className={textStatus} data-title="Totalavkastning">
+              {Math.round(totalYield)} kr
+            </div>
+            <div className="td options" />
+          </div>
+        </div>
       );
     } else {
       return <React.Fragment />;
     }
   };
 
-  handleClick(index) {
+  handleClick = index => {
     console.log(index);
-  }
+  };
 
   generateTableData() {
     let { totalSum, totalYield } = this.state;
     let { mStocks } = this.props;
     return (
       <React.Fragment>
-        <tbody>
-          { mStocks.map((item, index) => {
+        <div className="tbody">
+          {mStocks.map((item, index) => {
             const { name, quantity, purchasePrice, lastPrice } = item;
             const mYield = this.calcYield(lastPrice, purchasePrice, quantity);
             const mYieldPercent = this.calcYieldPercent(
@@ -87,55 +96,47 @@ class StockTable extends Component {
             totalYield += mYield;
             const textStatus = this.setTextStatus(mYield);
             return (
-              <tr key={index}>
-                <td>{name}</td>
-                <td>
-                  <div className="row_data" col_name="quantity">
-                    {quantity}
-                  </div>
-                </td>
-                <td>
-                  <div className="row_data" col_name="purchasePrice">
-                    {purchasePrice}
-                  </div>
-                </td>
-                <td>{lastPrice}</td>
-                <td className={textStatus}>{mYieldPercent}%</td>
-                <td className={textStatus}>{mYield} kr</td>
-                <td>
-                  <div className="options">
-                    <span className="btn_edit">
-                      <button
-                        className="btn btn-blue"
-                        onClick={() => this.handleClick(index)}
-                      >
-                        Redigera
-                      </button>
-                    </span>
-                    <button
-                      className="btn btn_delete btn-red"
-                      onClick={() => this.props.deleteFromList(index)}
-                    >
-                      Ta bort
-                    </button>
-                  </div>
-                </td>
-              </tr>
+              <div key={index} className="tr">
+                <div className="td">{name}</div>
+                <div className="td" col_name="quantity">
+                  {quantity}
+                </div>
+                <div className="td" col_name="purchasePrice">
+                  {purchasePrice} kr
+                </div>
+                <div className="td">{lastPrice} kr</div>
+                <div className={textStatus}>{mYieldPercent}%</div>
+                <div className={textStatus}>{mYield} kr</div>
+                <div className="td options">
+                  <button
+                    className="btn btn_edit btn-blue"
+                    onClick={() => this.handleClick(index)}
+                  >
+                    Redigera
+                  </button>
+                  <button
+                    className="btn btn_delete btn-red"
+                    onClick={() => this.props.deleteFromList(index)}
+                  >
+                    Ta bort
+                  </button>
+                </div>
+              </div>
             );
           })}
-        </tbody>
-        <tfoot>{this.generateTableFooter(totalYield, totalSum)}</tfoot>
+          {this.generateTableFooter(totalYield, totalSum)}
+        </div>
       </React.Fragment>
     );
   }
 
   render() {
     return (
-      <div className="table-container">
-        <table className="table">
+      <div className="table">
+        <div className="table-container">
           {this.generateTableHeaders()}
           {this.generateTableData()}
-        </table>
+        </div>
       </div>
     );
   }
