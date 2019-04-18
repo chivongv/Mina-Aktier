@@ -6,6 +6,7 @@ import StockTable from "./StockTable";
 import ToggleMode from "./ToggleMode";
 
 class Home extends Component {
+
   componentDidMount() {
     this.props.data.loadDataFromLocalStorage();
   }
@@ -43,7 +44,6 @@ class Home extends Component {
   };
 
   render() {
-    console.log("rendered home");
     return (
       <div className="container content">
         <nav className="nav">

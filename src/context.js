@@ -56,11 +56,9 @@ class StockProvider extends Component {
     } = state;
     if (mStocks == null) {
       mStocks = [];
-      console.log("needed?");
     }
     if (transactions == null) {
       transactions = [];
-      console.log("needed2?");
     }
     this.setState({
       checked,
@@ -110,11 +108,7 @@ class StockProvider extends Component {
           .auth()
           .setPersistence(firebase.auth.Auth.Persistence.SESSION);
         await firebase.auth().signInWithEmailAndPassword(email, password);
-        const user = await firebase.auth().currentUser;
-        if (user) {
-          this.setIsUserLoggedIn(true);
-          this.setUserDBDataToState();
-        }
+        this.setUserDBDataToState();
       } catch (e) {
         console.error("Error on logging user in.", e);
       }
@@ -131,7 +125,7 @@ class StockProvider extends Component {
 
   setUserDataToState = (stocks, transactions) => {
     this.setState({
-      stocks,
+      mStocks: stocks,
       transactions
     });
   }
@@ -150,8 +144,8 @@ class StockProvider extends Component {
           if (querySnapshot.data().mStocks != null) {
             uStocks = querySnapshot.data().mStocks;
           }
-          if(querySnapshot.data().uTransactions != null){
-            uTransactions = querySnapshot.data().uTransactions;
+          if(querySnapshot.data().transactions != null){
+            uTransactions = querySnapshot.data().transactions;
           }
         });
       return {uStocks, uTransactions};
@@ -160,11 +154,12 @@ class StockProvider extends Component {
 
   setUserDBDataToState = async () => {
     try {
+      const user = firebase.auth().currentUser;
+      if (user) {
       const {uStocks, uTransactions} = await this.getUserDataFromDB();
-      await console.log(uStocks, uTransactions);
       await this.setUserDataToState(uStocks, uTransactions);
-      await console.log(this.state);
       this.saveStateToLocalStorage(this.state);
+    }
     } catch (e) {
       console.error("Error on setting user data to state.", e);
     }
@@ -294,7 +289,6 @@ class StockProvider extends Component {
       };
       await this.addStockTransactionToState(item, transaction);
       this.setUserDataInDB(this.state.mStocks, this.state.transactions);
-      console.log(this.state.transactions);
       this.saveStateToLocalStorage(this.state);
     } else {
       console.log("Please fill out all fields.");
@@ -354,7 +348,6 @@ class StockProvider extends Component {
       transactions: [...prevState.transactions, transaction]
     }));
     this.setUserDataInDB(mStocks, this.state.transactions);
-    console.log(this.state.transactions);
     this.saveStateToLocalStorage(this.state);
   };
 
