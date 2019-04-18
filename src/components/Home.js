@@ -10,9 +10,9 @@ class Home extends Component {
     this.props.data.loadDataFromLocalStorage();
   }
 
-  renderUserButtons() {
+  renderUserButtons = () => {
     const user = firebase.auth().currentUser;
-    if (user || this.props.data.isUserLoggedIn) {
+    if (user != null || this.props.data.isUserLoggedIn) {
       return (
         <li>
           <button
@@ -40,21 +40,20 @@ class Home extends Component {
         </React.Fragment>
       );
     }
-  }
+  };
 
   render() {
+    console.log("rendered home");
     return (
       <div className="container content">
-      <nav className="nav">
-        <ul>{this.renderUserButtons()}</ul>
-        <ToggleMode
-          loadDataFromLocalStorage={
-            this.props.data.loadDataFromLocalStorage
-          }
-          checked={this.props.data.checked}
-          toggleUIMode={this.props.data.toggleUIMode}
-        />
-      </nav>
+        <nav className="nav">
+          <ul>{this.renderUserButtons()}</ul>
+          <ToggleMode
+            loadDataFromLocalStorage={this.props.data.loadDataFromLocalStorage}
+            checked={this.props.data.checked}
+            toggleUIMode={this.props.data.toggleUIMode}
+          />
+        </nav>
         <div className="right">
           <React.Fragment>
             <AddStock addToStockList={this.props.data.addToStockList} />

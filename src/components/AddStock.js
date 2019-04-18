@@ -10,7 +10,8 @@ class AddStock extends PureComponent {
       name: "",
       api_id: 0,
       quantity: '',
-      purchasePrice: ""
+      purchasePrice: "",
+      transactionDate: ""
     };
     this.handleChange = this.handleChange.bind(this);
     this.resetForm = this.resetForm.bind(this);
@@ -40,7 +41,7 @@ class AddStock extends PureComponent {
     const { name, value } = event.target;
     if (name === "name") {
       this.filterSuggestions(value);
-    } else {
+    }else {
       this.setState({
         [name]: value
       });
@@ -52,7 +53,8 @@ class AddStock extends PureComponent {
       this.state.name,
       this.state.api_id,
       this.state.quantity,
-      this.state.purchasePrice
+      this.state.purchasePrice,
+      this.state.transactionDate
     );
     this.resetForm();
   }
@@ -62,7 +64,8 @@ class AddStock extends PureComponent {
       name: "",
       api_id: 0,
       quantity: '',
-      purchasePrice: ''
+      purchasePrice: '',
+      transactionDate: ''
     });
   }
 
@@ -117,6 +120,13 @@ class AddStock extends PureComponent {
           placeholder="Inköpspris"
           onChange={this.handleChange}
           autoComplete="off"
+        />
+        <input
+          type="date"
+          value={this.state.transactionDate}
+          name="transactionDate"
+          placeholder="Transaktionsdatum"
+          onChange={this.handleChange}
         />
         <button
           type="button"
