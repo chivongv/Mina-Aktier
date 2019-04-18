@@ -172,6 +172,19 @@ class StockProvider extends Component {
     return (s1.name > s2.name) ? 1 : (s1.name < s2.name) ? -1: 0;
   }
 
+  setStocksInDB = (stocks) => {
+    const user = firebase.auth().currentUser;
+    if (user) {
+      const userId = user.uid;
+      db.collection("users")
+        .doc(userId)
+        .set({ mStocks: stocks })
+        .catch(error => {
+          console.error("Error writing stocks to DB: ", error);
+        });;
+    }
+  }
+
   addToStockList = async (name, api_id, quantity, purchasePrice) => {
     if (name.length > 0 && quantity > 0 && purchasePrice > 0) {
       let lastPrice = 0;
@@ -189,13 +202,7 @@ class StockProvider extends Component {
       await this.addStockToState(item);
       let sortedStocks = await [...this.state.mStocks].sort(this.compareStockName);
       await this.setStocksToState(sortedStocks);
-      const user = firebase.auth().currentUser;
-      if (user) {
-        const userId = user.uid;
-        db.collection("users")
-          .doc(userId)
-          .set({ mStocks: this.state.mStocks });
-      }
+      this.setStocksInDB(this.state.mStocks);
       this.saveStateToLocalStorage(this.state);
     } else {
       console.log("Please fill out all fields.");
@@ -223,45 +230,27 @@ class StockProvider extends Component {
     return stock.lastPrice;
   }
 
-  updateAllStocks = () => {
-    // todo: do not fetch lastPrice if api_key is 0
-    // otherwise loop through mStocks and fetch to update lastPrice
-    // let stocks = [];
-    const user = firebase.auth().currentUser;
-    if (user) {
-      const userId = user.uid;
-      console.log(userId);
-      firebase
-        .collection("users")
-        .doc(userId)
-        .then({});
-    }
+  updateAllStocks = async () => {
+    let stocks = await this.state.mStocks.slice(0);
+    for(let index=0; index < stocks.length; index++) {
+      let item = stocks[index];
+      let lastPrice = 0;
+      if (item.api_id !== 0) {
+        let fetchedStock = await this.fetchStockFromAPI(item.api_id);
+        lastPrice = await fetchedStock.lastPrice;
+        stocks[index].lastPrice = await lastPrice;
+      }
+    };
+    this.setStocksToState(stocks);
+    this.setStocksInDB(stocks);
   };
 
-  updateStocksInDB = stocks => {
-    const user = firebase.auth().currentUser;
-    if (user) {
-      const userId = user.uid;
-      db.collection("users")
-        .doc(userId)
-        .set({
-          mStocks: stocks
-        })
-        .then()
-        .catch(error => {
-          console.error("Error writing stocks to DB: ", error);
-        });
-    }
-  };
 
   deleteFromList = index => {
     let mStocks = [...this.state.mStocks];
     mStocks.splice(index, 1);
     this.setStocksToState(mStocks);
-    const user = firebase.auth().currentUser;
-    if (user) {
-      this.updateStocksInDB(mStocks);
-    }
+    this.setStocksInDB(mStocks);
     this.saveStateToLocalStorage(this.state);
   };
 
