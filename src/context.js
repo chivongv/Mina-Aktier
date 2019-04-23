@@ -314,6 +314,12 @@ class StockProvider extends Component {
     }));
   };
 
+  toggleSellModal = () => {
+    this.setState(prevState => ({
+      showSellModal: !prevState.showSellModal
+    }));
+  };
+
   buyStock = async (quantity, purchasePrice, transactionDate) => {
     if (quantity > 0 && purchasePrice > 0) {
       if (transactionDate == null || transactionDate === "") {
@@ -353,7 +359,46 @@ class StockProvider extends Component {
     }
   };
 
-  sellStock = () => {};
+  sellStock = async (quantity, sellPrice, transactionDate) => {
+    if (quantity > 0 && sellPrice > 0) {
+      const { name } = this.state.modalStock;
+      const index = this.state.mStocks.findIndex(item => item.name === name);
+      const oldStock = this.state.mStocks[index];
+      if (quantity > oldStock.quantity) {
+        console.log("You tried to sell more than you have.");
+        this.toggleSellModal();
+        return;
+      }
+      if (transactionDate == null || transactionDate === "") {
+        transactionDate = this.getCurrentDate();
+      }
+      const nQuantity = Number(oldStock.quantity) - Number(quantity);
+      let nStocks = this.state.mStocks.slice(0);
+      if (nQuantity > 0) {
+        const nStock = {
+          api_id: oldStock.api_id,
+          name,
+          quantity: nQuantity,
+          purchasePrice: oldStock.purchasePrice,
+          lastPrice: oldStock.lastPrice
+        };
+        nStocks[index] = await nStock;
+      } else {
+        await nStocks.splice(index, 1);
+      }
+      const transaction = {
+        transactionDate,
+        transactionType: "sell",
+        name,
+        quantity,
+        sellPrice: sellPrice
+      };
+      await this.addStocksTransactionToState(nStocks, transaction);
+      this.toggleSellModal();
+      this.setUserDataInDB(this.state.mStocks, this.state.transactions);
+      this.saveStateToLocalStorage(this.state);
+    }
+  };
 
   fetchStockFromAPI = async api_id => {
     const api_url =
@@ -387,26 +432,6 @@ class StockProvider extends Component {
     this.setStocksInDB(stocks);
   };
 
-  deleteFromList = async index => {
-    let mStocks = this.state.mStocks.slice(0);
-    const { name, quantity, purchasePrice } = mStocks[index];
-    const transactionDate = this.getCurrentDate();
-    const transaction = {
-      transactionDate,
-      transactionType: "sell",
-      name,
-      quantity,
-      sellPrice: purchasePrice
-    };
-    await mStocks.splice(index, 1);
-    await this.setState(prevState => ({
-      mStocks,
-      transactions: [...prevState.transactions, transaction]
-    }));
-    this.setUserDataInDB(mStocks, this.state.transactions);
-    this.saveStateToLocalStorage(this.state);
-  };
-
   render() {
     return (
       <StockContext.Provider
@@ -421,7 +446,9 @@ class StockProvider extends Component {
           addToStockList: this.addToStockList,
           setModalStock: this.setModalStock,
           toggleBuyModal: this.toggleBuyModal,
+          toggleSellModal: this.toggleSellModal,
           buyStock: this.buyStock,
+          sellStock: this.sellStock,
           deleteFromList: this.deleteFromList
         }}
       >

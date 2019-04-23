@@ -5,6 +5,7 @@ import AddStock from "./AddStock";
 import StockTable from "./StockTable";
 import ToggleMode from "./ToggleMode";
 import BuyModal from "./modals/BuyModal";
+import SellModal from "./modals/SellModal";
 
 class Home extends Component {
   componentDidMount() {
@@ -72,6 +73,7 @@ class Home extends Component {
               mStocks={this.props.data.mStocks}
               setModalStock={this.props.data.setModalStock}
               toggleBuyModal={this.props.data.toggleBuyModal}
+              toggleSellModal={this.props.data.toggleSellModal}
               deleteFromList={this.props.data.deleteFromList}
               loadDataFromLocalStorage={
                 this.props.data.loadDataFromLocalStorage
@@ -85,6 +87,14 @@ class Home extends Component {
             showBuyModal={this.props.data.showBuyModal}
             modalStock={this.props.data.modalStock}
             toggleBuyModal={this.props.data.toggleBuyModal}
+          />
+        ) : null}
+        {this.props.data.showSellModal ? (
+          <SellModal
+            sellStock={this.props.data.sellStock}
+            showSellModal={this.props.data.showSellModal}
+            modalStock={this.props.data.modalStock}
+            toggleSellModal={this.props.data.toggleSellModal}
           />
         ) : null}
       </div>

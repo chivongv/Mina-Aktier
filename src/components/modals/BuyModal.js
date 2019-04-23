@@ -14,13 +14,6 @@ class BuyModal extends Component {
     })
   }
 
-  initStockInfo = () => {
-    const { lastPrice } = this.props.modalStock;
-    this.setState({
-      purchasePrice: lastPrice
-    });
-  };
-
   handleChange = event => {
     const { name, value } = event.target;
     this.setState({

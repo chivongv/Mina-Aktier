@@ -84,6 +84,7 @@ class StockTable extends Component {
   handleOpenSellModal = async (id) => {
     const stock = this.props.mStocks[id];
     await this.props.setModalStock(stock);
+    this.props.toggleSellModal();
   }
 
   generateTableData() {
@@ -123,7 +124,7 @@ class StockTable extends Component {
                   </button>
                   <button
                     className="btn btn_delete btn-red"
-                    onClick={() => this.props.deleteFromList(index)}
+                    onClick={() => this.handleOpenSellModal(index)}
                   >
                     Sälj
                   </button>
