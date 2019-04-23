@@ -6,6 +6,7 @@ import StockTable from "./StockTable";
 import ToggleMode from "./ToggleMode";
 import BuyModal from "./modals/BuyModal";
 import SellModal from "./modals/SellModal";
+import InfoModal from "./modals/InfoModal";
 
 class Home extends Component {
   componentDidMount() {
@@ -80,6 +81,7 @@ class Home extends Component {
               }
             />
           </div>
+          <button className="btn btn_info" onClick={() => this.props.data.toggleInfoModal()}>?</button>
         </div>
         {this.props.data.showBuyModal ? (
           <BuyModal
@@ -97,6 +99,7 @@ class Home extends Component {
             toggleSellModal={this.props.data.toggleSellModal}
           />
         ) : null}
+        {this.props.data.showInfoModal ? <InfoModal toggleInfoModal={this.props.data.toggleInfoModal} /> : null}
       </div>
     );
   }

@@ -13,7 +13,8 @@ class StockProvider extends Component {
     lastUpdated: "",
     modalStock: null,
     showBuyModal: false,
-    showSellModal: false
+    showSellModal: false,
+    showInfoModal: false
   };
 
   componentDidMount() {
@@ -320,6 +321,12 @@ class StockProvider extends Component {
     }));
   };
 
+  toggleInfoModal = () => {
+    this.setState(prevState => ({
+      showInfoModal: !prevState.showInfoModal
+    }));
+  };
+
   buyStock = async (quantity, purchasePrice, transactionDate) => {
     if (quantity > 0 && purchasePrice > 0) {
       if (transactionDate == null || transactionDate === "") {
@@ -447,9 +454,9 @@ class StockProvider extends Component {
           setModalStock: this.setModalStock,
           toggleBuyModal: this.toggleBuyModal,
           toggleSellModal: this.toggleSellModal,
+          toggleInfoModal: this.toggleInfoModal,
           buyStock: this.buyStock,
-          sellStock: this.sellStock,
-          deleteFromList: this.deleteFromList
+          sellStock: this.sellStock
         }}
       >
         {this.props.children}
