@@ -10,7 +10,10 @@ class StockProvider extends Component {
     isUserLoggedIn: null,
     mStocks: [],
     transactions: [],
-    lastUpdated: ""
+    lastUpdated: "",
+    modalStock: null,
+    showBuyModal: false,
+    showSellModal: false
   };
 
   componentDidMount() {
@@ -128,14 +131,14 @@ class StockProvider extends Component {
       mStocks: stocks,
       transactions
     });
-  }
+  };
 
   getUserDataFromDB = async () => {
     const user = firebase.auth().currentUser;
     if (user) {
       const userId = user.uid;
-      let uStocks = []
-      let uTransactions = []
+      let uStocks = [];
+      let uTransactions = [];
       await db
         .collection("users")
         .doc(userId)
@@ -144,11 +147,11 @@ class StockProvider extends Component {
           if (querySnapshot.data().mStocks != null) {
             uStocks = querySnapshot.data().mStocks;
           }
-          if(querySnapshot.data().transactions != null){
+          if (querySnapshot.data().transactions != null) {
             uTransactions = querySnapshot.data().transactions;
           }
         });
-      return {uStocks, uTransactions};
+      return { uStocks, uTransactions };
     }
   };
 
@@ -156,10 +159,10 @@ class StockProvider extends Component {
     try {
       const user = firebase.auth().currentUser;
       if (user) {
-      const {uStocks, uTransactions} = await this.getUserDataFromDB();
-      await this.setUserDataToState(uStocks, uTransactions);
-      this.saveStateToLocalStorage(this.state);
-    }
+        const { uStocks, uTransactions } = await this.getUserDataFromDB();
+        await this.setUserDataToState(uStocks, uTransactions);
+        this.saveStateToLocalStorage(this.state);
+      }
     } catch (e) {
       console.error("Error on setting user data to state.", e);
     }
@@ -196,12 +199,9 @@ class StockProvider extends Component {
     }));
   };
 
-  addStockTransactionToState = async (stock, transaction) => {
-    let sortedStocks = await [...this.state.mStocks, stock].sort(
-      this.compareStockName
-    );
+  addStocksTransactionToState = async (stocks, transaction) => {
     this.setState(prevState => ({
-      mStocks: sortedStocks,
+      mStocks: stocks,
       transactions: [...prevState.transactions, transaction]
     }));
   };
@@ -271,7 +271,7 @@ class StockProvider extends Component {
       let lastPrice = 0;
       if (api_id) {
         let stock = await this.fetchStockFromAPI(api_id);
-        lastPrice = this.getLastPriceFromStock(stock);
+        lastPrice = stock.lastPrice;
       }
       const item = await {
         api_id,
@@ -287,13 +287,73 @@ class StockProvider extends Component {
         quantity,
         purchasePrice
       };
-      await this.addStockTransactionToState(item, transaction);
+      let sortedStocks = await [...this.state.mStocks, item].sort(
+        this.compareStockName
+      );
+      await this.addStocksTransactionToState(sortedStocks, transaction);
       this.setUserDataInDB(this.state.mStocks, this.state.transactions);
       this.saveStateToLocalStorage(this.state);
     } else {
       console.log("Please fill out all fields.");
     }
   };
+
+  getStock = id => {
+    return this.state.mStocks[id];
+  };
+
+  setModalStock = stock => {
+    this.setState({
+      modalStock: stock
+    });
+  };
+
+  toggleBuyModal = () => {
+    this.setState(prevState => ({
+      showBuyModal: !prevState.showBuyModal
+    }));
+  };
+
+  buyStock = async (quantity, purchasePrice, transactionDate) => {
+    if (quantity > 0 && purchasePrice > 0) {
+      if (transactionDate == null || transactionDate === "") {
+        transactionDate = this.getCurrentDate();
+      }
+      const { name } = this.state.modalStock;
+      const index = this.state.mStocks.findIndex(item => item.name === name);
+      const oldStock = this.state.mStocks[index];
+      const nQuantity = Number(oldStock.quantity) + Number(quantity);
+      const nPurchasePrice = Number(
+        parseFloat(
+          (oldStock.purchasePrice * oldStock.quantity +
+            quantity * purchasePrice) /
+            nQuantity
+        ).toFixed(2)
+      );
+      const nStock = {
+        api_id: oldStock.api_id,
+        name,
+        quantity: nQuantity,
+        purchasePrice: nPurchasePrice,
+        lastPrice: oldStock.lastPrice
+      };
+      const transaction = {
+        transactionDate,
+        transactionType: "buy",
+        name,
+        quantity,
+        purchasePrice
+      };
+      let nStocks = this.state.mStocks.slice(0);
+      nStocks[index] = nStock;
+      await this.addStocksTransactionToState(nStocks, transaction);
+      this.toggleBuyModal();
+      this.setUserDataInDB(this.state.mStocks, this.state.transactions);
+      this.saveStateToLocalStorage(this.state);
+    }
+  };
+
+  sellStock = () => {};
 
   fetchStockFromAPI = async api_id => {
     const api_url =
@@ -311,10 +371,6 @@ class StockProvider extends Component {
       return 0;
     }
   };
-
-  getLastPriceFromStock(stock) {
-    return stock.lastPrice;
-  }
 
   updateAllStocks = async () => {
     let stocks = await this.state.mStocks.slice(0);
@@ -363,7 +419,9 @@ class StockProvider extends Component {
           setUserLoggedIn: this.setUserLoggedIn,
           updateAllStocks: this.updateAllStocks,
           addToStockList: this.addToStockList,
-          saveEditing: this.saveEditing,
+          setModalStock: this.setModalStock,
+          toggleBuyModal: this.toggleBuyModal,
+          buyStock: this.buyStock,
           deleteFromList: this.deleteFromList
         }}
       >

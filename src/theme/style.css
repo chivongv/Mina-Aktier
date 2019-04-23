@@ -127,14 +127,14 @@ input::placeholder {
   list-style: none;
 }
 
-.nav ul li:nth-child(2n){
+.nav ul li:nth-child(2n) {
   margin-left: 10px;
 }
 
 /* toggleMode */
 .toggle-container {
   position: absolute;
-  top: .5rem;
+  top: 0.5rem;
   right: 3rem;
 }
 
@@ -217,7 +217,7 @@ input::placeholder {
   border-color: #dc3545;
 }
 
-.btn-green {
+.btn_register {
   background-color: #28a745;
   border-color: #28a745;
 }
@@ -225,13 +225,22 @@ input::placeholder {
   background-color: #ffc107;
   border-color: #ffc107;
 }
-.btn-blue {
+.btn_buy,
+.btn_logout,
+.btn_login,
+.btn_fetch,
+.btn_addStock {
   background-color: var(--btn-blue);
   border-color: var(--btn-blue);
 }
 
 .btn_delete {
   display: inline-block;
+}
+
+.btn_goBack {
+  background-color: transparent;
+  border-color: transparent;
 }
 
 /* table */
@@ -275,7 +284,7 @@ input::placeholder {
   display: flex;
 }
 
-.table .options .btn:nth-child(2n){
+.table .options .btn:nth-child(2n) {
   margin-left: 10px;
 }
 
@@ -315,6 +324,32 @@ input::placeholder {
   box-sizing: border-box;
   color: var(--color-text);
 }
+
+/* Modal */
+.modalContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.4);
+  color: var(--color-text);
+}
+
+.modalOptions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn_buyStock {
+  border-color: var(--btn-blue);
+  background-color: var(--btn-blue);
+}
+
 
 /* Footer */
 footer {

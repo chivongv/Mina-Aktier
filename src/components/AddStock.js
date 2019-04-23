@@ -133,7 +133,7 @@ class AddStock extends PureComponent {
           onClick={() => {
             this.submitForm();
           }}
-          className="btn btn_addStock btn-blue"
+          className="btn btn_addStock"
         >
           Lägg till aktie
         </button>

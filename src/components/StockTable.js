@@ -75,9 +75,16 @@ class StockTable extends Component {
     }
   };
 
-  handleClick = index => {
-    console.log(index);
-  };
+  handleOpenBuyModal = async (id) => {
+    const stock = this.props.mStocks[id];
+    await this.props.setModalStock(stock);
+    this.props.toggleBuyModal();
+  }
+
+  handleOpenSellModal = async (id) => {
+    const stock = this.props.mStocks[id];
+    await this.props.setModalStock(stock);
+  }
 
   generateTableData() {
     let { totalSum, totalYield } = this.state;
@@ -109,16 +116,16 @@ class StockTable extends Component {
                 <div className={textStatus}>{mYield} kr</div>
                 <div className="td options">
                   <button
-                    className="btn btn_edit btn-blue"
-                    onClick={() => this.handleClick(index)}
+                    className="btn btn_buy"
+                    onClick={() => this.handleOpenBuyModal(index)}
                   >
-                    Redigera
+                    Köp
                   </button>
                   <button
                     className="btn btn_delete btn-red"
                     onClick={() => this.props.deleteFromList(index)}
                   >
-                    Ta bort
+                    Sälj
                   </button>
                 </div>
               </div>

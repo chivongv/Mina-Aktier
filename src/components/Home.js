@@ -4,9 +4,9 @@ import firebase from "../firebase.js";
 import AddStock from "./AddStock";
 import StockTable from "./StockTable";
 import ToggleMode from "./ToggleMode";
+import BuyModal from "./modals/BuyModal";
 
 class Home extends Component {
-
   componentDidMount() {
     this.props.data.loadDataFromLocalStorage();
   }
@@ -19,7 +19,7 @@ class Home extends Component {
           <button
             type="button"
             onClick={() => this.props.data.sendLogout()}
-            className="btn btn-blue"
+            className="btn btn_logout"
           >
             Logga ut
           </button>
@@ -29,12 +29,12 @@ class Home extends Component {
       return (
         <React.Fragment>
           <li>
-            <Link to="/login" className="btn btn-blue">
+            <Link to="/login" className="btn btn_login">
               Logga in
             </Link>
           </li>
           <li>
-            <Link to="/register" className="btn btn-green">
+            <Link to="/register" className="btn btn_register">
               Registrera
             </Link>
           </li>
@@ -58,7 +58,7 @@ class Home extends Component {
           <React.Fragment>
             <AddStock addToStockList={this.props.data.addToStockList} />
             <button
-              className="btn btn-blue"
+              className="btn btn_fetch"
               onClick={() => this.props.data.updateAllStocks()}
             >
               Hämta aktiekurser
@@ -70,6 +70,8 @@ class Home extends Component {
             <h1>Mina aktier</h1>
             <StockTable
               mStocks={this.props.data.mStocks}
+              setModalStock={this.props.data.setModalStock}
+              toggleBuyModal={this.props.data.toggleBuyModal}
               deleteFromList={this.props.data.deleteFromList}
               loadDataFromLocalStorage={
                 this.props.data.loadDataFromLocalStorage
@@ -77,6 +79,14 @@ class Home extends Component {
             />
           </div>
         </div>
+        {this.props.data.showBuyModal ? (
+          <BuyModal
+            buyStock={this.props.data.buyStock}
+            showBuyModal={this.props.data.showBuyModal}
+            modalStock={this.props.data.modalStock}
+            toggleBuyModal={this.props.data.toggleBuyModal}
+          />
+        ) : null}
       </div>
     );
   }
