@@ -57,7 +57,7 @@ class SellModal extends Component {
               <button
                 type="button"
                 onClick={() => {
-                  this.props.toggleBuyModal();
+                  this.props.toggleSellModal();
                 }}
                 className="btn btn_goBack"
               >

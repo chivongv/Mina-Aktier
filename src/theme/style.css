@@ -242,7 +242,7 @@ input::placeholder {
 
 .btn_goBack {
   background-color: transparent;
-  border-color: transparent;
+  border-color: #fff;
 }
 
 /* table */
