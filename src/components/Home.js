@@ -47,7 +47,7 @@ class Home extends Component {
 
   render() {
     return (
-      <div className="container content">
+      <div className="container">
         <nav className="nav">
           <ul>{this.renderUserButtons()}</ul>
           <ToggleMode
@@ -81,7 +81,6 @@ class Home extends Component {
               }
             />
           </div>
-          <button className="btn btn_info" onClick={() => this.props.data.toggleInfoModal()}>?</button>
         </div>
         {this.props.data.showBuyModal ? (
           <BuyModal
@@ -100,6 +99,7 @@ class Home extends Component {
           />
         ) : null}
         {this.props.data.showInfoModal ? <InfoModal toggleInfoModal={this.props.data.toggleInfoModal} /> : null}
+        <button className="btn btn_info" onClick={() => this.props.data.toggleInfoModal()}>?</button>
       </div>
     );
   }
