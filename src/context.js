@@ -270,15 +270,18 @@ class StockProvider extends Component {
         transactionDate = this.getCurrentDate();
       }
       let lastPrice = 0;
+      let currency = '';
       if (api_id) {
         let stock = await this.fetchStockFromAPI(api_id);
-        lastPrice = stock.lastPrice;
+        lastPrice = await stock.lastPrice;
+        currency = await stock.currency;
       }
       const item = await {
         api_id,
         name,
         quantity,
         purchasePrice,
+        currency,
         lastPrice
       };
       const transaction = {
@@ -286,7 +289,8 @@ class StockProvider extends Component {
         transactionType: "buy",
         name,
         quantity,
-        purchasePrice
+        purchasePrice,
+        currency
       };
       let sortedStocks = await [...this.state.mStocks, item].sort(
         this.compareStockName
@@ -343,11 +347,13 @@ class StockProvider extends Component {
             nQuantity
         ).toFixed(2)
       );
+      const currency = oldStock.currency!=null ? oldStock.currency : '';
       const nStock = {
         api_id: oldStock.api_id,
         name,
         quantity: nQuantity,
         purchasePrice: nPurchasePrice,
+        currency,
         lastPrice: oldStock.lastPrice
       };
       const transaction = {
@@ -355,7 +361,8 @@ class StockProvider extends Component {
         transactionType: "buy",
         name,
         quantity,
-        purchasePrice
+        purchasePrice,
+        currency
       };
       let nStocks = this.state.mStocks.slice(0);
       nStocks[index] = nStock;
@@ -381,12 +388,14 @@ class StockProvider extends Component {
       }
       const nQuantity = Number(oldStock.quantity) - Number(quantity);
       let nStocks = this.state.mStocks.slice(0);
+      const currency = oldStock.currency!=null ? oldStock.currency : '';
       if (nQuantity > 0) {
         const nStock = {
           api_id: oldStock.api_id,
           name,
           quantity: nQuantity,
           purchasePrice: oldStock.purchasePrice,
+          currency,
           lastPrice: oldStock.lastPrice
         };
         nStocks[index] = await nStock;
@@ -398,7 +407,8 @@ class StockProvider extends Component {
         transactionType: "sell",
         name,
         quantity,
-        sellPrice: sellPrice
+        sellPrice: sellPrice,
+        currency
       };
       await this.addStocksTransactionToState(nStocks, transaction);
       this.toggleSellModal();
@@ -429,10 +439,15 @@ class StockProvider extends Component {
     for (let index = 0; index < stocks.length; index++) {
       let item = stocks[index];
       let lastPrice = 0;
+      let currency = '';
       if (item.api_id !== 0) {
         let fetchedStock = await this.fetchStockFromAPI(item.api_id);
         lastPrice = await fetchedStock.lastPrice;
+        if(item.currency == null || item.currency === ''){
+          currency = await fetchedStock.currency;
+        }
         stocks[index].lastPrice = await lastPrice;
+        stocks[index].currency = await currency;
       }
     }
     this.setStocksToState(stocks);

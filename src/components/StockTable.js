@@ -58,13 +58,13 @@ class StockTable extends Component {
             <div className="td" />
             <div className="td" />
             <div className={textStatus} data-title="Marknadsvärde">
-              {Math.round(totalSum)} kr
+              {Math.round(totalSum)}
             </div>
             <div className={textStatus} data-title="Totalavkastning [%]">
               {totalYieldPercent}%
             </div>
             <div className={textStatus} data-title="Totalavkastning">
-              {Math.round(totalYield)} kr
+              {Math.round(totalYield)}
             </div>
             <div className="td options" />
           </div>
@@ -94,7 +94,7 @@ class StockTable extends Component {
       <React.Fragment>
         <div className="tbody">
           {mStocks.map((item, index) => {
-            const { name, quantity, purchasePrice, lastPrice } = item;
+            const { name, quantity, purchasePrice, lastPrice, currency } = item;
             const mYield = this.calcYield(lastPrice, purchasePrice, quantity);
             const mYieldPercent = this.calcYieldPercent(
               mYield,
@@ -110,11 +110,11 @@ class StockTable extends Component {
                   {quantity}
                 </div>
                 <div className="td" col_name="purchasePrice">
-                  {purchasePrice} kr
+                  {purchasePrice} { currency }
                 </div>
-                <div className="td">{lastPrice} kr</div>
+                <div className="td">{lastPrice} { currency }</div>
                 <div className={textStatus}>{mYieldPercent}%</div>
-                <div className={textStatus}>{mYield} kr</div>
+                <div className={textStatus}>{mYield} { currency }</div>
                 <div className="td options">
                   <button
                     className="btn btn_buy"
