@@ -26,7 +26,7 @@ html {
   --color-headings: #000;
   --color-text: #333;
   --color-text-invert: #b5b5b5;
-  --btn-blue: #17a2b8;
+  --btn-blue: #419bd0;
 }
 
 html[data-theme="dark"] {
@@ -48,7 +48,7 @@ body {
 }
 
 .positive {
-  color: #009ecf;
+  color: #419bd0;
 }
 
 .negative {
@@ -215,11 +215,6 @@ input::placeholder {
   max-width: fit-content;
 }
 
-.btn-red {
-  background-color: #dc3545;
-  border-color: #dc3545;
-}
-
 .btn_register {
   background-color: #28a745;
   border-color: #28a745;
@@ -238,7 +233,23 @@ input::placeholder {
 }
 
 .btn_delete {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.btn_buyStock {
+  background-color: #419bd0;
+  border-color: #419bd0;
+}
+
+.btn_sellStock {
+  background-color: #fd6b60;
+  border-color: #fd6b60;
+}
+
+.btn_delete {
   display: inline-block;
+  white-space: nowrap;
 }
 
 .btn_goBack {
@@ -295,10 +306,6 @@ input::placeholder {
   margin-left: 10px;
 }
 
-.btn_delete {
-  white-space: nowrap;
-}
-
 /* login */
 .login-container {
   justify-content: center;
@@ -352,12 +359,17 @@ input::placeholder {
   justify-content: space-between;
 }
 
-.btn_buyStock,.btn_sellStock,.btn_info {
-  border-color: var(--btn-blue);
-  background-color: var(--btn-blue);
+.buy-modal-title {
+  color: #419bd0;
+}
+
+.sell-modal-title {
+  color: #fd6b60;
 }
 
 .btn_info {
+  border-color: var(--btn-blue);
+  background-color: var(--btn-blue);
   position: fixed;
   bottom:1rem;
   left: 1rem;

@@ -123,7 +123,7 @@ class StockTable extends Component {
                     Köp
                   </button>
                   <button
-                    className="btn btn_delete btn-red"
+                    className="btn btn_delete"
                     onClick={() => this.handleOpenSellModal(index)}
                   >
                     Sälj

@@ -27,7 +27,7 @@ class SellModal extends Component {
     } else {
       return (
         <div className="modalContainer">
-          <h2>Sälj {this.props.modalStock.name}</h2>
+          <h2 className="sell-modal-title">Sälj {this.props.modalStock.name}</h2>
           <div className="form-container">
             <input
               type="number"
