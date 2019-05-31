@@ -273,8 +273,10 @@ class StockProvider extends Component {
       let currency = '';
       if (api_id) {
         let stock = await this.fetchStockFromAPI(api_id);
-        lastPrice = await stock.lastPrice;
-        currency = await stock.currency;
+        if(stock!==0){
+          lastPrice = await stock.lastPrice;
+          currency = await stock.currency;
+        }
       }
       const item = await {
         api_id,
@@ -418,10 +420,10 @@ class StockProvider extends Component {
   };
 
   fetchStockFromAPI = async api_id => {
-    const api_url =
-      "https://limitless-garden-26844.herokuapp.com/https://www.avanza.se/_mobile/market/stock/";
+    const proxy_url = "https://cors-anywhere.herokuapp.com/";
+    const api_url = "https://www.avanza.se/_mobile/market/stock/";
     try {
-      let res = await fetch(api_url + api_id);
+      let res = await fetch(proxy_url + api_url + api_id);
       if (res.status === 200) {
         let data = await res.json();
         return data;
@@ -439,15 +441,17 @@ class StockProvider extends Component {
     for (let index = 0; index < stocks.length; index++) {
       let item = stocks[index];
       let lastPrice = 0;
-      let currency = '';
+      let currency = (item.currency == null || item.currency === '') ? '' : item.currency;
       if (item.api_id !== 0) {
         let fetchedStock = await this.fetchStockFromAPI(item.api_id);
-        lastPrice = await fetchedStock.lastPrice;
-        if(item.currency == null || item.currency === ''){
-          currency = await fetchedStock.currency;
+        if(fetchedStock !== 0){
+          lastPrice = await fetchedStock.lastPrice;
+          stocks[index].lastPrice = await lastPrice;
+          if(currency === ''){
+            currency = await fetchedStock.currency;
+            stocks[index].currency = await currency;
+          }
         }
-        stocks[index].lastPrice = await lastPrice;
-        stocks[index].currency = await currency;
       }
     }
     this.setStocksToState(stocks);
