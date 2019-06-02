@@ -114,7 +114,7 @@ class StockProvider extends Component {
         await firebase.auth().signInWithEmailAndPassword(email, password);
         this.setUserDBDataToState();
       } catch (e) {
-        console.error("Error on logging user in.", e);
+        return "Fel mejladress eller lösenord.";
       }
     }
   };
@@ -145,10 +145,9 @@ class StockProvider extends Component {
         .doc(userId)
         .get()
         .then(querySnapshot => {
-          if (querySnapshot.data().mStocks != null) {
+          if (typeof(querySnapshot.data()) !== 'undefined' ||
+          querySnapshot.data() != null ) {
             uStocks = querySnapshot.data().mStocks;
-          }
-          if (querySnapshot.data().transactions != null) {
             uTransactions = querySnapshot.data().transactions;
           }
         });
@@ -219,19 +218,6 @@ class StockProvider extends Component {
     return s1.name > s2.name ? 1 : s1.name < s2.name ? -1 : 0;
   };
 
-  setStocksInDB = stocks => {
-    const user = firebase.auth().currentUser;
-    if (user) {
-      const userId = user.uid;
-      db.collection("users")
-        .doc(userId)
-        .set({ mStocks: stocks })
-        .catch(error => {
-          console.error("Error writing stocks to DB: ", error);
-        });
-    }
-  };
-
   setUserDataInDB = (stocks, transactions) => {
     const user = firebase.auth().currentUser;
     if (user) {
@@ -255,6 +241,7 @@ class StockProvider extends Component {
     let month = d.getMonth() + 1;
     month = month <= 9 ? "0" + month : month;
     let day = d.getDate();
+    day = day <= 9 ? "0" + day : day;
     return year + "-" + month + "-" + day;
   };
 
@@ -457,7 +444,7 @@ class StockProvider extends Component {
       }
     }
     this.setStocksToState(stocks);
-    this.setStocksInDB(stocks);
+    this.setUserDataInDB(stocks, this.state.transactions);
   };
 
   render() {

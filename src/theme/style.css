@@ -181,6 +181,11 @@ input::placeholder {
 }
 
 /* form-container */
+.errorMsg {
+  padding: 0.5rem 0;
+  color: red;
+}
+
 .form-container {
   display: flex;
   flex-direction: column;
@@ -314,13 +319,14 @@ input::placeholder {
 }
 
 .login-container h2 {
-  padding: 1rem;
+  padding: 0.5rem 1rem;
 }
 
 .login-container form {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0.5rem 0;
 }
 
 /* AutoCompleteText */

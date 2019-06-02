@@ -7,7 +7,8 @@ class Login extends Component {
     super(props);
     this.state = {
       email: "",
-      password: ""
+      password: "",
+      errorMsg: ""
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -24,9 +25,45 @@ class Login extends Component {
     });
   };
 
-  handleSubmit = (event, loginWithEmailPassword) => {
+  isEmailValid = email => {
+    const MIN_EMAIl_LENGTH = 3;
+    return email.length > MIN_EMAIl_LENGTH && email.toLowerCase().includes('@');
+  };
+
+  isPasswordLengthValid = password => {
+    const MIN_PASSWORD_LENGTH = 6;
+    return password.length >= MIN_PASSWORD_LENGTH;
+  };
+
+  validateForm = () => {
+    const { email, password } = this.state;
+    let errorMsg="";
+    if (
+      !this.isEmailValid(email) ||
+      !this.isPasswordLengthValid(password)
+    ) {
+      errorMsg = "Felaktig mejladress eller lösenord. " +
+      "Lösenordets längd måste vara större än 6.";
+    }
+    if(errorMsg.length > 0){
+      return [false, errorMsg];
+    }
+    return [true];
+  }
+
+  handleSubmit = async (event, loginWithEmailPassword) => {
     event.preventDefault();
-    this.props.loginWithEmailPassword(this.state.email, this.state.password);
+    const isFormValid = this.validateForm();
+    if(isFormValid[0]){
+      try{
+        const msg = await this.props.loginWithEmailPassword(this.state.email, this.state.password);
+        if(msg) this.setState({errorMsg: msg});
+      }catch(e){
+        console.log(e);
+      }
+    }else{
+      this.setState({errorMsg: isFormValid[1]});
+    }
   };
 
   render() {
@@ -34,7 +71,8 @@ class Login extends Component {
       return (
         <div className="login-container form-container">
           <h2>Logga in</h2>
-          <form onSubmit={event => this.handleSubmit(event)}>
+          {this.state.errorMsg ? <h4 className="errorMsg">{this.state.errorMsg}</h4> : null}
+          <form onSubmit={event => this.handleSubmit(event)} noValidate>
             <input
               type="email"
               name="email"
