@@ -2,14 +2,16 @@ import React, { Component } from "react";
 
 class BuyModal extends Component {
   state = {
+    name: '',
     quantity: '',
     purchasePrice: '',
     transactionDate: ''
   };
 
   componentDidMount(){
-    const {lastPrice} = this.props.modalStock;
+    const {name, lastPrice} = this.props.modalStock;
     this.setState({
+      name,
       purchasePrice: lastPrice
     })
   }
@@ -27,7 +29,7 @@ class BuyModal extends Component {
     } else {
       return (
         <div className="modalContainer">
-          <h2 className="buy-modal-title">Köp {this.props.modalStock.name}</h2>
+          <h2 className="buy-modal-title">Köp {this.state.name}</h2>
           <div className="form-container">
             <input
               type="number"
@@ -67,11 +69,14 @@ class BuyModal extends Component {
                 type="button"
                 onClick={() => {
                   const {
+                    name,
                     quantity,
                     purchasePrice,
                     transactionDate
                   } = this.state;
-                  this.props.buyStock(quantity, purchasePrice, transactionDate);
+                  this.props.buyStock(name, quantity, purchasePrice,
+                    transactionDate);
+                  this.props.toggleBuyModal();
                 }}
                 className="btn btn_buyStock"
               >

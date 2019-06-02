@@ -266,40 +266,44 @@ class StockProvider extends Component {
     transactionDate
   ) => {
     if (name.length > 0 && quantity > 0 && purchasePrice > 0) {
-      if (transactionDate == null || transactionDate === "") {
-        transactionDate = this.getCurrentDate();
-      }
-      let lastPrice = 0;
-      let currency = '';
-      if (api_id) {
-        let stock = await this.fetchStockFromAPI(api_id);
-        if(stock!==0){
-          lastPrice = await stock.lastPrice;
-          currency = await stock.currency;
+      if(this.state.mStocks.find(item => item.name === name)){
+        this.buyStock(name, quantity, purchasePrice, transactionDate);
+      }else{
+        if (transactionDate == null || transactionDate === "") {
+          transactionDate = this.getCurrentDate();
         }
+        let lastPrice = 0;
+        let currency = '';
+        if (api_id) {
+          let stock = await this.fetchStockFromAPI(api_id);
+          if(stock!==0){
+            lastPrice = await stock.lastPrice;
+            currency = await stock.currency;
+          }
+        }
+        const item = await {
+          api_id,
+          name,
+          quantity,
+          purchasePrice,
+          currency,
+          lastPrice
+        };
+        const transaction = {
+          transactionDate,
+          transactionType: "buy",
+          name,
+          quantity,
+          purchasePrice,
+          currency
+        };
+        let sortedStocks = await [...this.state.mStocks, item].sort(
+          this.compareStockName
+        );
+        await this.addStocksTransactionToState(sortedStocks, transaction);
+        this.setUserDataInDB(this.state.mStocks, this.state.transactions);
+        this.saveStateToLocalStorage(this.state);
       }
-      const item = await {
-        api_id,
-        name,
-        quantity,
-        purchasePrice,
-        currency,
-        lastPrice
-      };
-      const transaction = {
-        transactionDate,
-        transactionType: "buy",
-        name,
-        quantity,
-        purchasePrice,
-        currency
-      };
-      let sortedStocks = await [...this.state.mStocks, item].sort(
-        this.compareStockName
-      );
-      await this.addStocksTransactionToState(sortedStocks, transaction);
-      this.setUserDataInDB(this.state.mStocks, this.state.transactions);
-      this.saveStateToLocalStorage(this.state);
     } else {
       console.log("Please fill out all fields.");
     }
@@ -333,12 +337,11 @@ class StockProvider extends Component {
     }));
   };
 
-  buyStock = async (quantity, purchasePrice, transactionDate) => {
-    if (quantity > 0 && purchasePrice > 0) {
+  buyStock = async (name, quantity, purchasePrice, transactionDate) => {
+    if (name.length > 0 && quantity > 0 && purchasePrice > 0) {
       if (transactionDate == null || transactionDate === "") {
         transactionDate = this.getCurrentDate();
       }
-      const { name } = this.state.modalStock;
       const index = this.state.mStocks.findIndex(item => item.name === name);
       const oldStock = this.state.mStocks[index];
       const nQuantity = Number(oldStock.quantity) + Number(quantity);
@@ -369,7 +372,6 @@ class StockProvider extends Component {
       let nStocks = this.state.mStocks.slice(0);
       nStocks[index] = nStock;
       await this.addStocksTransactionToState(nStocks, transaction);
-      this.toggleBuyModal();
       this.setUserDataInDB(this.state.mStocks, this.state.transactions);
       this.saveStateToLocalStorage(this.state);
     }
