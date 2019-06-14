@@ -5,8 +5,8 @@ const StockContext = React.createContext();
 
 class StockProvider extends Component {
   state = {
-    checked: false,
-    theme: "light",
+    checked: true,
+    theme: "dark",
     isUserLoggedIn: null,
     mStocks: [],
     transactions: [],
@@ -440,6 +440,9 @@ class StockProvider extends Component {
             currency = await fetchedStock.currency;
             stocks[index].currency = await currency;
           }
+          await this.setState({
+            mStocks: stocks
+          });
         }
       }
     }

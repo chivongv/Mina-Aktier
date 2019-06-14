@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import StockItem from "./StockItem";
 
 class StockTable extends Component {
   constructor(props) {
@@ -28,8 +29,6 @@ class StockTable extends Component {
   setTextStatus = mYield => {
     return mYield >= 0 ? "td positive" : "td negative";
   };
-
-  handleEditing = () => {};
 
   generateTableHeaders = () => {
     return (
@@ -94,7 +93,7 @@ class StockTable extends Component {
       <React.Fragment>
         <div className="tbody">
           {mStocks.map((item, index) => {
-            const { name, quantity, purchasePrice, lastPrice, currency } = item;
+            const { quantity, purchasePrice, lastPrice } = item;
             const mYield = this.calcYield(lastPrice, purchasePrice, quantity);
             const mYieldPercent = this.calcYieldPercent(
               mYield,
@@ -102,35 +101,10 @@ class StockTable extends Component {
             );
             totalSum += lastPrice * quantity;
             totalYield += mYield;
-            const textStatus = this.setTextStatus(mYield);
-            return (
-              <div key={index} className="tr">
-                <div className="td">{name}</div>
-                <div className="td" col_name="quantity">
-                  {quantity}
-                </div>
-                <div className="td" col_name="purchasePrice">
-                  {purchasePrice} { currency }
-                </div>
-                <div className="td">{lastPrice} { currency }</div>
-                <div className={textStatus}>{mYieldPercent}%</div>
-                <div className={textStatus}>{mYield} { currency }</div>
-                <div className="td options">
-                  <button
-                    className="btn btn_buy"
-                    onClick={() => this.handleOpenBuyModal(index)}
-                  >
-                    Köp
-                  </button>
-                  <button
-                    className="btn btn_delete"
-                    onClick={() => this.handleOpenSellModal(index)}
-                  >
-                    Sälj
-                  </button>
-                </div>
-              </div>
-            );
+            return <StockItem key={index} index={index} item={item}
+            mYield={mYield} mYieldPercent={mYieldPercent}
+            handleOpenBuyModal={this.handleOpenBuyModal}
+            handleOpenSellModal={this.handleOpenSellModal} />
           })}
           {this.generateTableFooter(totalYield, totalSum)}
         </div>
