@@ -5,6 +5,7 @@ import { StockConsumer } from "./context";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
+import ResetPassword from "./components/ResetPassword";
 import Footer from "./components/Footer";
 
 class App extends Component {
@@ -34,6 +35,12 @@ class App extends Component {
                         data.loadDataFromLocalStorage
                       }
                     />
+                  )}
+                />
+                <Route
+                  path="/resetpassword"
+                  render={() => (
+                    <ResetPassword />
                   )}
                 />
               </Switch>

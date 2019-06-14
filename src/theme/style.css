@@ -232,6 +232,7 @@ input::placeholder {
 .btn_logout,
 .btn_login,
 .btn_fetch,
+.btn_reset,
 .btn_addStock {
   background-color: var(--btn-blue);
   border-color: var(--btn-blue);

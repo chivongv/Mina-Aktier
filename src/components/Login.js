@@ -93,7 +93,7 @@ class Login extends Component {
           </form>
           <div className="navs">
             <Link to="/">Tillbaka</Link>
-            <Link to="/">Glöm lösenord</Link>
+            <Link to="/resetpassword">Glöm lösenord</Link>
             <Link to="/register">Skapa konto</Link>
           </div>
         </div>

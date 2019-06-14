@@ -10,6 +10,7 @@ const config = {
   messagingSenderId: process.env.REACT_APP_messagingSenderId
 };
 firebase.initializeApp(config);
+firebase.auth().languageCode = 'sv';
 
 export default firebase;
 export const db = firebase.firestore();
