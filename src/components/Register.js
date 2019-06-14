@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import firebase from "../firebase.js";
 import { Link, Redirect } from "react-router-dom";
+import ToggleMode from "./ToggleMode";
 
 class Register extends Component {
   constructor(props) {
@@ -112,36 +113,45 @@ class Register extends Component {
       return <Redirect to="/" />;
     }else{
       return (
-        <div className="login-container form-container">
-          <h2>Registrera</h2>
-          {this.state.emailErrorMsg ? <h3 className="errorMsg">{this.state.emailErrorMsg}</h3> : null}
-          {this.state.passwordErrorMsg ? <h3 className="errorMsg">{this.state.passwordErrorMsg}</h3> : null}
-          <form onSubmit={event => this.handleSubmit(event)} noValidate>
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              onChange={this.handleChange}
+        <div className="container">
+          <nav className="nav">
+            <ToggleMode
+              loadDataFromLocalStorage={this.props.loadDataFromLocalStorage}
+              checked={this.props.checked}
+              toggleUIMode={this.props.toggleUIMode}
             />
-            <input
-              type="password"
-              name="password"
-              placeholder="Lösenord"
-              onChange={this.handleChange}
-            />
-            <input
-              type="password"
-              name="password2"
-              placeholder="Lösenord igen"
-              onChange={this.handleChange}
-            />
-            <button type="submit" className="btn btn_register btn-blue">
-              Registrera
-            </button>
-          </form>
-          <div className="navs">
-            <Link to="/">Tillbaka</Link>
-            <Link to="/login">Redan skapat</Link>
+          </nav>
+          <div className="login-container form-container">
+            <h2>Registrera</h2>
+            {this.state.emailErrorMsg ? <h3 className="errorMsg">{this.state.emailErrorMsg}</h3> : null}
+            {this.state.passwordErrorMsg ? <h3 className="errorMsg">{this.state.passwordErrorMsg}</h3> : null}
+            <form onSubmit={event => this.handleSubmit(event)} noValidate>
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                onChange={this.handleChange}
+              />
+              <input
+                type="password"
+                name="password"
+                placeholder="Lösenord"
+                onChange={this.handleChange}
+              />
+              <input
+                type="password"
+                name="password2"
+                placeholder="Lösenord igen"
+                onChange={this.handleChange}
+              />
+              <button type="submit" className="btn btn_register btn-blue">
+                Registrera
+              </button>
+            </form>
+            <div className="navs">
+              <Link to="/">Tillbaka</Link>
+              <Link to="/login">Redan skapat</Link>
+            </div>
           </div>
         </div>)
     }

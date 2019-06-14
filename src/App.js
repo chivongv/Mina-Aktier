@@ -24,6 +24,8 @@ class App extends Component {
                       loadDataFromLocalStorage={data.loadDataFromLocalStorage}
                       isUserLoggedIn={data.isUserLoggedIn}
                       loginWithEmailPassword={data.loginWithEmailPassword}
+                      checked={data.checked}
+                      toggleUIMode={data.toggleUIMode}
                     />
                   )}
                 />
@@ -34,13 +36,18 @@ class App extends Component {
                       loadDataFromLocalStorage={
                         data.loadDataFromLocalStorage
                       }
+                      checked={data.checked}
+                      toggleUIMode={data.toggleUIMode}
                     />
                   )}
                 />
                 <Route
                   path="/resetpassword"
                   render={() => (
-                    <ResetPassword />
+                    <ResetPassword
+                    checked={data.checked}
+                    toggleUIMode={data.toggleUIMode}
+                      />
                   )}
                 />
               </Switch>

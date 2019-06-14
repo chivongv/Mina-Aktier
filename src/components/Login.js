@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Redirect } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
+import ToggleMode from "./ToggleMode";
 
 class Login extends Component {
   constructor(props) {
@@ -69,32 +69,41 @@ class Login extends Component {
   render() {
     if (!this.props.isUserLoggedIn) {
       return (
-        <div className="login-container form-container">
-          <h2>Logga in</h2>
-          {this.state.errorMsg ? <h4 className="errorMsg">{this.state.errorMsg}</h4> : null}
-          <form onSubmit={event => this.handleSubmit(event)} noValidate>
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              onChange={this.handleChange}
-              required
+        <div className="container">
+          <nav className="nav">
+            <ToggleMode
+              loadDataFromLocalStorage={this.props.loadDataFromLocalStorage}
+              checked={this.props.checked}
+              toggleUIMode={this.props.toggleUIMode}
             />
-            <input
-              type="password"
-              name="password"
-              placeholder="Lösenord"
-              onChange={this.handleChange}
-              required
-            />
-            <button type="submit" className="btn btn_login btn-blue">
-              Logga in
-            </button>
-          </form>
-          <div className="navs">
-            <Link to="/">Tillbaka</Link>
-            <Link to="/resetpassword">Glöm lösenord</Link>
-            <Link to="/register">Skapa konto</Link>
+          </nav>
+          <div className="login-container form-container">
+            <h2>Logga in</h2>
+            {this.state.errorMsg ? <h4 className="errorMsg">{this.state.errorMsg}</h4> : null}
+            <form onSubmit={event => this.handleSubmit(event)} noValidate>
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                onChange={this.handleChange}
+                required
+              />
+              <input
+                type="password"
+                name="password"
+                placeholder="Lösenord"
+                onChange={this.handleChange}
+                required
+              />
+              <button type="submit" className="btn btn_login btn-blue">
+                Logga in
+              </button>
+            </form>
+            <div className="navs">
+              <Link to="/">Tillbaka</Link>
+              <Link to="/resetpassword">Glöm lösenord</Link>
+              <Link to="/register">Skapa konto</Link>
+            </div>
           </div>
         </div>
       );
