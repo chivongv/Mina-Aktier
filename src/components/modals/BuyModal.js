@@ -1,14 +1,19 @@
 import React, { Component } from "react";
 
 class BuyModal extends Component {
-  state = {
-    name: '',
-    quantity: '',
-    purchasePrice: '',
-    transactionDate: ''
-  };
+  constructor(props){
+    super(props);
+    this.state = {
+      name: '',
+      quantity: '',
+      purchasePrice: '',
+      transactionDate: ''
+    };
+    this.inputRef = React.createRef();
+  }
 
   componentDidMount(){
+    this.inputRef.current.focus();
     const {name, lastPrice} = this.props.modalStock;
     this.setState({
       name,
@@ -38,6 +43,7 @@ class BuyModal extends Component {
               min="1"
               placeholder="Antal"
               onChange={this.handleChange}
+              ref={this.inputRef}
               autoComplete="off"
             />
             <input
