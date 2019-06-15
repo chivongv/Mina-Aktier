@@ -12,6 +12,11 @@ class ResetPassword extends Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.inputRef = React.createRef();
+  }
+
+  componentDidMount(){
+    this.inputRef.current.focus();
   }
 
   handleChange = event => {
@@ -73,6 +78,7 @@ class ResetPassword extends Component {
             name="email"
             placeholder="Email"
             onChange={this.handleChange}
+            ref={this.inputRef}
             required
           />
           <button type="submit" className="btn btn_reset btn-blue">

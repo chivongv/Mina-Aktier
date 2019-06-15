@@ -17,9 +17,11 @@ class Register extends Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.inputRef = React.createRef();
   }
 
   componentDidMount() {
+    this.inputRef.current.focus();
     this.props.loadDataFromLocalStorage();
   }
 
@@ -131,6 +133,7 @@ class Register extends Component {
                 name="email"
                 placeholder="Email"
                 onChange={this.handleChange}
+                ref={this.inputRef}
               />
               <input
                 type="password"
@@ -150,7 +153,7 @@ class Register extends Component {
             </form>
             <div className="navs">
               <Link to="/">Tillbaka</Link>
-              <Link to="/login">Redan skapat</Link>
+              <Link to="/login">Logga in</Link>
             </div>
           </div>
         </div>)

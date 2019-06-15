@@ -12,9 +12,11 @@ class Login extends Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.inputRef = React.createRef();
   }
 
   componentDidMount() {
+    this.inputRef.current.focus();
     this.props.loadDataFromLocalStorage();
   }
 
@@ -86,6 +88,7 @@ class Login extends Component {
                 name="email"
                 placeholder="Email"
                 onChange={this.handleChange}
+                ref={this.inputRef}
                 required
               />
               <input
