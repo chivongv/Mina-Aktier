@@ -85,7 +85,7 @@ input::placeholder {
 .container {
   display: flex;
   justify-content: space-around;
-  height: 100vh;
+  min-height: 95vh;
   flex: 1;
 }
 
@@ -398,10 +398,6 @@ input::placeholder {
 
 /* Footer */
 footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
   text-align: center;
   color: var(--color-text);
   transition: 1s;

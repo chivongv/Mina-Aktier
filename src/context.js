@@ -93,7 +93,7 @@ class StockProvider extends Component {
 
   clearLocalStorage = () => {
     try {
-      localStorage.setItem("mina-aktier", null);
+      localStorage.removeItem("mina-aktier");
     } catch (e) {
       console.error("Error on clearing localstorage.", e);
     }

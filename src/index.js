@@ -5,11 +5,13 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter as Router } from "react-router-dom";
 import { StockProvider } from "./context";
+import Footer from "./components/Footer";
 
 ReactDOM.render(
   <StockProvider>
     <Router>
       <App />
+      <Footer />
     </Router>
   </StockProvider>,
   document.getElementById("root")

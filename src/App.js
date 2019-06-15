@@ -6,7 +6,6 @@ import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import ResetPassword from "./components/ResetPassword";
-import Footer from "./components/Footer";
 
 class App extends Component {
   render() {
@@ -51,7 +50,6 @@ class App extends Component {
                   )}
                 />
               </Switch>
-              <Footer />
             </React.Fragment>
           );
         }}
